@@ -156,12 +156,14 @@
     ]
   }
 
-  function change_boards(event: Event) {
+
+  function on_game_change(event: Event) {
     if (event.target instanceof HTMLSelectElement) {
-      if (event.target.value in all_boards) {
-        possible_boards.value = all_boards[event.target.value];
-      } else {
-        possible_boards.value = [];
+      possible_boards.value = all_boards[event.target.value];
+
+      const board_select = document.getElementById("board");
+      if (board_select instanceof HTMLSelectElement) {
+        board_select.value = "disabled";
       }
     }
   }
@@ -179,7 +181,7 @@
           <label for="game">Game</label>
           <label for="board">Board</label>
           <label for="turns">Turns</label>
-          <select id="game" v-on:input="change_boards">
+          <select id="game" v-on:input="on_game_change">
             <option disabled selected value> -- Game -- </option>
             <option value="Mario Party">Mario Party</option>
             <option value="Mario Party 2">Mario Party 2</option>
@@ -200,7 +202,7 @@
             <option value="Mario Party Superstars">Mario Party Superstars</option>
           </select>
           <select id="board">
-            <option disabled selected value> -- Board -- </option>
+            <option disabled selected value="disabled"> -- Board -- </option>
             <option :value=board v-for="board in possible_boards">{{board}}</option>
           </select>
           <input id="turns" type="number" />
