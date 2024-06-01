@@ -200,6 +200,7 @@
             <option value="Mario Party Superstars">Mario Party Superstars</option>
           </select>
           <select id="board">
+            <option disabled selected value> -- Board -- </option>
             <option :value=board v-for="board in possible_boards">{{board}}</option>
           </select>
           <input id="turns" type="number" />
@@ -222,6 +223,11 @@
     min-width: 0;
   }
 
+  select {
+    display: flex;
+    min-width: 0;
+  }
+
   .title {
     align-self: center;
     font-size: 75px;
@@ -234,7 +240,7 @@
 
   .game-info-container {
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(3, 33.3333%);
     gap: 10px;
     margin: 75px;
   }
