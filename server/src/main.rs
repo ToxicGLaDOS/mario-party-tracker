@@ -59,6 +59,7 @@ impl AuthnBackend for Backend {
         &self,
         Credentials { user_id }: Self::Credentials,
     ) -> Result<Option<Self::User>, Self::Error> {
+        println!("{}", user_id);
         Ok(self.users.get(&user_id).cloned())
     }
 
@@ -92,26 +93,28 @@ async fn main() -> Result<(), sqlx::Error> {
     let session_layer = SessionManagerLayer::new(session_store);
 
     // Auth service.
-    let backend = Backend::default();
+    let mut backend = Backend::default();
+    backend.users.insert(1, User{id: 123, pw_hash: "foo".to_string()});
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
 
     // build our application with a single route
     let app = Router::new()
-        .route("/login", post(login))
         .route(
             "/protected",
             get(|| async { "Gotta be logged in to see me!" }),
         )
         .route_layer(login_required!(Backend, login_url = "/login"))
-        .layer(
-            ServiceBuilder::new()
-                .layer(Extension(pool))
-                .layer(CorsLayer::permissive())
-        )
-        .fallback_service(
-            ServeDir::new(opts.static_dir)
-        );
+        .route("/login", post(login))
+        .layer(auth_layer);
+        //.layer(
+        //    ServiceBuilder::new()
+        //        .layer(Extension(pool))
+        //        .layer(CorsLayer::permissive())
+        //)
+        //.fallback_service(
+        //    ServeDir::new(opts.static_dir)
+        //);
 
     println!("Hosting on {}:{}", opts.addr, opts.port);
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", opts.addr, opts.port)).await.unwrap();
@@ -123,7 +126,7 @@ async fn main() -> Result<(), sqlx::Error> {
 #[derive(Debug, Clone)]
 struct User {
     id: i64,
-    pw_hash: Vec<u8>,
+    pw_hash: String,
 }
 
 
@@ -135,7 +138,7 @@ impl AuthUser for User {
     }
 
     fn session_auth_hash(&self) -> &[u8] {
-        &self.pw_hash
+        &self.pw_hash.as_bytes()
     }
 }
 
@@ -147,9 +150,13 @@ async fn login(
     mut auth_session: AuthSession,
     Form(creds): Form<Credentials>,
 ) -> impl IntoResponse {
+    println!("login");
     let user = match auth_session.authenticate(creds.clone()).await {
         Ok(Some(user)) => user,
-        Ok(None) => return StatusCode::UNAUTHORIZED.into_response(),
+        Ok(None) => {
+            println!("Unauthorized!");
+            return StatusCode::UNAUTHORIZED.into_response()
+        },
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
 

@@ -3,12 +3,12 @@
 
 <template>
   <main>
-    <form action="http://localhost:8081/login">
+    <form action="http://localhost:8081/login" method="post">
       <div class="vertical-align">
         <h1 class="title">Login</h1>
         <div>
-          <input id="username" placeholder="Username"/>
-          <input id="password" placeholder="Password"/>
+          <input id="username" name="username" placeholder="Username"/>
+          <input id="user_id" name="user_id" placeholder="Password"/>
         </div>
         <input class="submit" type="submit" value="Login">
       </div>
