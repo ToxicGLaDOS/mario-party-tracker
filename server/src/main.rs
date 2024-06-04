@@ -3,14 +3,15 @@ use clap::Parser;
 use std::env;
 use std::collections::HashMap;
 use sqlx::postgres::PgPoolOptions;
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use axum::{
     Extension,
     routing::{get, post, get_service},
     Router,
     http::StatusCode,
     response::{IntoResponse, Redirect},
-    Form
+    Form,
+    Json
 };
 use async_trait::async_trait;
 use axum_login::{
@@ -34,7 +35,7 @@ struct CliOptions {
     port: u16,
 
     /// set the directory where static files are to be found
-    #[clap(long = "static-dir", default_value = "../client/dist/index.html")]
+    #[clap(long = "static-dir", default_value = "../client/dist")]
     static_dir: String,
 }
 
@@ -96,7 +97,7 @@ async fn main() -> Result<(), sqlx::Error> {
     backend.users.insert(123, User{id: 123, pw_hash: "foo".to_string()});
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
-    let fallback = get_service(ServeFile::new(opts.static_dir.clone())).handle_error(
+    let fallback = get_service(ServeFile::new(format!("{}/index.html", opts.static_dir))).handle_error(
         |_| async move { (StatusCode::INTERNAL_SERVER_ERROR, "internal server error") },
     );
 
@@ -119,7 +120,7 @@ async fn main() -> Result<(), sqlx::Error> {
         )
         .nest_service(
             "/assets",
-            ServeDir::new(opts.static_dir)
+            ServeDir::new(format!("{}/assets", opts.static_dir))
         )
         .fallback_service(fallback);
 
@@ -149,6 +150,11 @@ impl AuthUser for User {
     }
 }
 
+#[derive(Serialize)]
+struct LoginFailedResponse {
+    message: String,
+    success: bool
+}
 
 type AuthSession = axum_login::AuthSession<Backend>;
 
@@ -162,7 +168,12 @@ async fn login(
         Ok(Some(user)) => user,
         Ok(None) => {
             println!("Unauthorized!");
-            return Redirect::to("/login").into_response();
+            return (StatusCode::UNAUTHORIZED, Json(
+                LoginFailedResponse {
+                    message: String::from("Authorization failed"),
+                    success: false
+                }
+            )).into_response();
         },
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };

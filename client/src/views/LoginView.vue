@@ -1,11 +1,58 @@
 <script setup lang="ts">
+  var form: HTMLFormElement;
+  var span: HTMLElement;
+
+  window.onload = function () {
+    form = document.querySelector("#login_info") as HTMLFormElement;
+    span = document.querySelector("#flash") as HTMLSpanElement;
+
+    // Take over form submission
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendData();
+    });
+  }
+
+  async function sendData() {
+    // Associate the FormData object with the form element
+    const formData = new FormData(form);
+    // By default FormData is a multipart form, but we want a normal
+    // application/x-www-form-urlencoded form, so we convert it here
+    const urlEncodedForm = new URLSearchParams(formData as any).toString();
+
+    try {
+      var response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: urlEncodedForm
+      })
+
+
+      if (!response.ok) {
+        // Show flash
+        span.innerHTML = "Failed to log in";
+      }
+      else if (response.redirected) {
+        window.location.href = response.url;
+      }
+      else {
+        throw new Error("Got something other than a failure or redirect");
+      }
+
+    } catch (e) {
+      console.log(e);
+    }
+  }
 </script>
 
 <template>
   <main>
-    <form action="http://localhost:8081/login" method="post">
+    <form id="login_info" action="/login" method="post">
       <div class="vertical-align">
         <h1 class="title">Login</h1>
+        <span id="flash"></span>
         <div>
           <input id="username" name="username" placeholder="Username"/>
           <input id="user_id" name="user_id" placeholder="Password"/>
