@@ -1,14 +1,12 @@
 use tokio;
 use clap::Parser;
 use std::env;
-use std::path::PathBuf;
 use std::collections::HashMap;
 use sqlx::postgres::PgPoolOptions;
 use serde::Deserialize;
 use axum::{
     Extension,
-    middleware,
-    routing::{get, post, get_service, any_service},
+    routing::{get, post, get_service},
     Router,
     http::StatusCode,
     response::{IntoResponse, Redirect},
@@ -36,7 +34,7 @@ struct CliOptions {
     port: u16,
 
     /// set the directory where static files are to be found
-    #[clap(long = "static-dir", default_value = "./dist")]
+    #[clap(long = "static-dir", default_value = "../client/dist/index.html")]
     static_dir: String,
 }
 
@@ -98,9 +96,9 @@ async fn main() -> Result<(), sqlx::Error> {
     backend.users.insert(123, User{id: 123, pw_hash: "foo".to_string()});
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
-    let fallback = get_service(ServeFile::new("../client/dist/index.html")).handle_error(
-                |_| async move { (StatusCode::INTERNAL_SERVER_ERROR, "internal server error") },
-            );
+    let fallback = get_service(ServeFile::new(opts.static_dir.clone())).handle_error(
+        |_| async move { (StatusCode::INTERNAL_SERVER_ERROR, "internal server error") },
+    );
 
     // build our application with a single route
     let app = Router::new()
@@ -121,7 +119,7 @@ async fn main() -> Result<(), sqlx::Error> {
         )
         .nest_service(
             "/assets",
-            ServeDir::new("../client/dist/assets")
+            ServeDir::new(opts.static_dir)
         )
         .fallback_service(fallback);
 
@@ -153,10 +151,6 @@ impl AuthUser for User {
 
 
 type AuthSession = axum_login::AuthSession<Backend>;
-
-async fn internal_error() -> impl IntoResponse {
-    return StatusCode::INTERNAL_SERVER_ERROR.into_response()
-}
 
 #[axum::debug_handler]
 async fn login(
