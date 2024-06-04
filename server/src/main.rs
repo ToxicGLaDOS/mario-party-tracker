@@ -1,13 +1,14 @@
 use tokio;
 use clap::Parser;
 use std::env;
+use std::path::PathBuf;
 use std::collections::HashMap;
 use sqlx::postgres::PgPoolOptions;
 use serde::Deserialize;
 use axum::{
     Extension,
     middleware,
-    routing::{get, post},
+    routing::{get, post, get_service, any_service},
     Router,
     http::StatusCode,
     response::{IntoResponse, Redirect},
@@ -22,7 +23,7 @@ use axum_login::{
     tower_sessions::{MemoryStore, SessionManagerLayer},
     AuthManagerLayerBuilder};
 use tower::ServiceBuilder;
-use tower_http::{cors::CorsLayer, services::ServeDir};
+use tower_http::{cors::CorsLayer, services::ServeDir, services::ServeFile};
 
 #[derive(Parser, Debug)]
 struct CliOptions {
@@ -94,9 +95,12 @@ async fn main() -> Result<(), sqlx::Error> {
 
     // Auth service.
     let mut backend = Backend::default();
-    backend.users.insert(1, User{id: 123, pw_hash: "foo".to_string()});
+    backend.users.insert(123, User{id: 123, pw_hash: "foo".to_string()});
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
+    let fallback = get_service(ServeFile::new("../client/dist/index.html")).handle_error(
+                |_| async move { (StatusCode::INTERNAL_SERVER_ERROR, "internal server error") },
+            );
 
     // build our application with a single route
     let app = Router::new()
@@ -105,16 +109,21 @@ async fn main() -> Result<(), sqlx::Error> {
             get(|| async { "Gotta be logged in to see me!" }),
         )
         .route_layer(login_required!(Backend, login_url = "/login"))
-        .route("/login", post(login))
-        .layer(auth_layer);
-        //.layer(
-        //    ServiceBuilder::new()
-        //        .layer(Extension(pool))
-        //        .layer(CorsLayer::permissive())
-        //)
-        //.fallback_service(
-        //    ServeDir::new(opts.static_dir)
-        //);
+        // Routes that don't match the method, but do
+        // match the route cause a 405 and don't get
+        // sent to the fallback without this merge
+        .route("/login", post(login).merge(fallback.clone())) 
+        .layer(auth_layer)
+        .layer(
+            ServiceBuilder::new()
+                .layer(Extension(pool))
+                .layer(CorsLayer::permissive())
+        )
+        .nest_service(
+            "/assets",
+            ServeDir::new("../client/dist/assets")
+        )
+        .fallback_service(fallback);
 
     println!("Hosting on {}:{}", opts.addr, opts.port);
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", opts.addr, opts.port)).await.unwrap();
@@ -145,6 +154,10 @@ impl AuthUser for User {
 
 type AuthSession = axum_login::AuthSession<Backend>;
 
+async fn internal_error() -> impl IntoResponse {
+    return StatusCode::INTERNAL_SERVER_ERROR.into_response()
+}
+
 #[axum::debug_handler]
 async fn login(
     mut auth_session: AuthSession,
@@ -155,7 +168,7 @@ async fn login(
         Ok(Some(user)) => user,
         Ok(None) => {
             println!("Unauthorized!");
-            return StatusCode::UNAUTHORIZED.into_response()
+            return Redirect::to("/login").into_response();
         },
         Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
     };
