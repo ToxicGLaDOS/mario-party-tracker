@@ -37,6 +37,10 @@ struct CliOptions {
     /// set the directory where static files are to be found
     #[clap(long = "static-dir", default_value = "../client/dist")]
     static_dir: String,
+
+    /// set whether this is a dev server
+    #[clap(long = "dev", default_value = "false")]
+    dev: bool
 }
 
 #[derive(Clone, Default)]
@@ -101,28 +105,31 @@ async fn main() -> Result<(), sqlx::Error> {
         |_| async move { (StatusCode::INTERNAL_SERVER_ERROR, "internal server error") },
     );
 
-    // build our application with a single route
-    let app = Router::new()
+    let mut app = Router::new()
         .route(
             "/protected",
             get(|| async { "Gotta be logged in to see me!" }),
         )
         .route_layer(login_required!(Backend, login_url = "/login"))
-        // Routes that don't match the method, but do
-        // match the route cause a 405 and don't get
-        // sent to the fallback without this merge
-        .route("/login", post(login).merge(fallback.clone())) 
+        .route("/api/login", post(login))
         .layer(auth_layer)
         .layer(
             ServiceBuilder::new()
                 .layer(Extension(pool))
                 .layer(CorsLayer::permissive())
-        )
-        .nest_service(
+        );
+
+    if !opts.dev {
+        println!("Running production server");
+        app = app.nest_service(
             "/assets",
             ServeDir::new(format!("{}/assets", opts.static_dir))
         )
         .fallback_service(fallback);
+    }
+    else {
+        println!("Running devlopment server");
+    }
 
     println!("Hosting on {}:{}", opts.addr, opts.port);
     let listener = tokio::net::TcpListener::bind(format!("{}:{}", opts.addr, opts.port)).await.unwrap();
@@ -151,7 +158,7 @@ impl AuthUser for User {
 }
 
 #[derive(Serialize)]
-struct LoginFailedResponse {
+struct LoginResponse {
     message: String,
     success: bool
 }
@@ -169,7 +176,7 @@ async fn login(
         Ok(None) => {
             println!("Unauthorized!");
             return (StatusCode::UNAUTHORIZED, Json(
-                LoginFailedResponse {
+                LoginResponse {
                     message: String::from("Authorization failed"),
                     success: false
                 }
@@ -182,5 +189,10 @@ async fn login(
         return StatusCode::INTERNAL_SERVER_ERROR.into_response();
     }
 
-    Redirect::to("/protected").into_response()
+    return (StatusCode::OK, Json(
+                LoginResponse {
+                    message: String::from("Success!"),
+                    success: true
+                }
+            )).into_response();
 }

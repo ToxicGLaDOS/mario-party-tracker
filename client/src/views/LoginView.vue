@@ -20,29 +20,20 @@
     // application/x-www-form-urlencoded form, so we convert it here
     const urlEncodedForm = new URLSearchParams(formData as any).toString();
 
-    try {
-      var response = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: urlEncodedForm
-      })
+    var response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: urlEncodedForm
+    })
 
-
-      if (!response.ok) {
-        // Show flash
-        span.innerHTML = "Failed to log in";
-      }
-      else if (response.redirected) {
-        window.location.href = response.url;
-      }
-      else {
-        throw new Error("Got something other than a failure or redirect");
-      }
-
-    } catch (e) {
-      console.log(e);
+    if (response.ok) {
+      window.location.href = "/input";
+    }
+    else {
+      // Show flash
+      span.innerHTML = "Failed to log in";
     }
   }
 </script>
