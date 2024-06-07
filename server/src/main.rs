@@ -1,15 +1,17 @@
 use tokio;
+use tokio::task;
 use clap::Parser;
 use std::env;
-use std::collections::HashMap;
-use sqlx::postgres::PgPoolOptions;
+use sqlx::FromRow;
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use serde::{Serialize, Deserialize};
+use password_auth::verify_password;
 use axum::{
     Extension,
     routing::{get, post, get_service},
     Router,
     http::StatusCode,
-    response::{IntoResponse, Redirect},
+    response::IntoResponse,
     Form,
     Json
 };
@@ -43,35 +45,68 @@ struct CliOptions {
     dev: bool
 }
 
-#[derive(Clone, Default)]
-struct Backend {
-    users: HashMap<i64, User>,
+#[derive(Debug, Clone)]
+pub struct Backend {
+    db: PgPool,
 }
 
-#[derive(Clone, Deserialize)]
-struct Credentials {
-    user_id: i64,
+impl Backend {
+    pub fn new(db: PgPool) -> Self {
+        Self { db }
+    }
+}
+
+// This allows us to extract the authentication fields from forms. We use this
+// to authenticate requests with the backend.
+#[derive(Debug, Clone, Deserialize)]
+pub struct Credentials {
+    pub username: String,
+    pub password: String,
+}
+
+
+#[derive(Debug, thiserror::Error)]
+pub enum Error {
+    #[error(transparent)]
+    Sqlx(#[from] sqlx::Error),
+
+    #[error(transparent)]
+    TaskJoin(#[from] task::JoinError),
 }
 
 #[async_trait]
 impl AuthnBackend for Backend {
     type User = User;
     type Credentials = Credentials;
-    type Error = std::convert::Infallible;
+    type Error = Error;
 
     async fn authenticate(
         &self,
-        Credentials { user_id }: Self::Credentials,
+        creds: Self::Credentials,
     ) -> Result<Option<Self::User>, Self::Error> {
-        println!("{}", user_id);
-        Ok(self.users.get(&user_id).cloned())
+        println!("1");
+        let user: Option<Self::User> = sqlx::query_as("SELECT * FROM users WHERE username = $1")
+            .bind(creds.username)
+            .fetch_optional(&self.db)
+            .await?;
+
+        println!("user: {user:?}");
+
+        // Verifying the password is blocking and potentially slow, so we'll do so via
+        // `spawn_blocking`.
+        task::spawn_blocking(|| {
+            Ok(user.filter(|user| verify_password(creds.password, &user.password_hash).is_ok()))
+        })
+        .await?
     }
 
-    async fn get_user(
-        &self,
-        user_id: &UserId<Self>,
-    ) -> Result<Option<Self::User>, Self::Error> {
-        Ok(self.users.get(user_id).cloned())
+    async fn get_user(&self, user_id: &UserId<Self>) -> Result<Option<Self::User>, Self::Error> {
+        let user = sqlx::query_as("SELECT * FROM users WHERE id = ?")
+            .bind(user_id)
+            .fetch_optional(&self.db)
+            .await?;
+
+        Ok(user)
     }
 }
 
@@ -92,13 +127,17 @@ async fn main() -> Result<(), sqlx::Error> {
         .max_connections(5)
         .connect(connection_string.as_str()).await?;
 
+    sqlx::migrate!()
+        .run(&pool)
+        .await?;
+
     // Session layer.
     let session_store = MemoryStore::default();
     let session_layer = SessionManagerLayer::new(session_store);
 
     // Auth service.
-    let mut backend = Backend::default();
-    backend.users.insert(123, User{id: 123, pw_hash: "foo".to_string()});
+    let backend = Backend::new(pool.clone());
+    //backend.users.insert(123, User{id: 123, pw_hash: "foo".to_string()});
     let auth_layer = AuthManagerLayerBuilder::new(backend, session_layer).build();
 
     let fallback = get_service(ServeFile::new(format!("{}/index.html", opts.static_dir))).handle_error(
@@ -138,12 +177,24 @@ async fn main() -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-#[derive(Debug, Clone)]
-struct User {
+#[derive(Clone, Serialize, Deserialize, FromRow)]
+pub struct User {
     id: i64,
-    pw_hash: String,
+    pub username: String,
+    password_hash: String,
 }
 
+// Here we've implemented `Debug` manually to avoid accidentally logging the
+// password hash.
+impl std::fmt::Debug for User {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("User")
+            .field("id", &self.id)
+            .field("username", &self.username)
+            .field("password", &"[redacted]")
+            .finish()
+    }
+}
 
 impl AuthUser for User {
     type Id = i64;
@@ -153,7 +204,7 @@ impl AuthUser for User {
     }
 
     fn session_auth_hash(&self) -> &[u8] {
-        &self.pw_hash.as_bytes()
+        &self.password_hash.as_bytes()
     }
 }
 
@@ -182,7 +233,10 @@ async fn login(
                 }
             )).into_response();
         },
-        Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+        Err(error) => {
+            println!("error: {}", error);
+            return StatusCode::INTERNAL_SERVER_ERROR.into_response()
+        }
     };
 
     if auth_session.login(&user).await.is_err() {

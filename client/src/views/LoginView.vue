@@ -46,7 +46,7 @@
         <span id="flash"></span>
         <div>
           <input id="username" name="username" placeholder="Username"/>
-          <input id="user_id" name="user_id" placeholder="Password"/>
+          <input id="password" name="password" placeholder="Password"/>
         </div>
         <input class="submit" type="submit" value="Login">
       </div>
