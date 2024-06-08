@@ -5,7 +5,7 @@ use std::env;
 use sqlx::FromRow;
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use serde::{Serialize, Deserialize};
-use password_auth::verify_password;
+use password_auth::{generate_hash, verify_password};
 use axum::{
     Extension,
     routing::{get, post, get_service},
@@ -84,13 +84,10 @@ impl AuthnBackend for Backend {
         &self,
         creds: Self::Credentials,
     ) -> Result<Option<Self::User>, Self::Error> {
-        println!("1");
         let user: Option<Self::User> = sqlx::query_as("SELECT * FROM users WHERE username = $1")
             .bind(creds.username)
             .fetch_optional(&self.db)
             .await?;
-
-        println!("user: {user:?}");
 
         // Verifying the password is blocking and potentially slow, so we'll do so via
         // `spawn_blocking`.
@@ -151,6 +148,7 @@ async fn main() -> Result<(), sqlx::Error> {
         )
         .route_layer(login_required!(Backend, login_url = "/login"))
         .route("/api/login", post(login))
+        .route("/api/signup", post(signup))
         .layer(auth_layer)
         .layer(
             ServiceBuilder::new()
@@ -209,12 +207,58 @@ impl AuthUser for User {
 }
 
 #[derive(Serialize)]
-struct LoginResponse {
+struct MessageResponse {
     message: String,
     success: bool
 }
 
 type AuthSession = axum_login::AuthSession<Backend>;
+
+#[axum::debug_handler]
+async fn signup(
+    Extension(pool): Extension<PgPool>,
+    mut auth_session: AuthSession,
+    Form(creds): Form<Credentials>,
+) -> impl IntoResponse {
+    let user_exists = sqlx::query("SELECT 1 FROM users WHERE username = $1")
+        .bind(creds.username.clone())
+        .fetch_optional(&pool)
+        .await
+        .unwrap();
+
+    match user_exists {
+        Some(_record) => {
+            println!("Already exists");
+            return (
+                StatusCode::FORBIDDEN,
+                Json(
+                    MessageResponse {
+                        message: String::from("That username already exists"),
+                        success: false
+                    }
+                )
+            ).into_response();
+        },
+        None => {
+            println!("Creating user");
+            sqlx::query("INSERT INTO users (username, password_hash) VALUES ($1, $2)")
+                .bind(creds.username)
+                .bind(generate_hash(creds.password))
+                .fetch_optional(&pool)
+                .await
+                .unwrap();
+            return (
+                StatusCode::OK,
+                Json(
+                    MessageResponse {
+                        message: String::from("User created"),
+                        success: true
+                    }
+                )
+            ).into_response();
+        }
+    }
+}
 
 #[axum::debug_handler]
 async fn login(
@@ -227,7 +271,7 @@ async fn login(
         Ok(None) => {
             println!("Unauthorized!");
             return (StatusCode::UNAUTHORIZED, Json(
-                LoginResponse {
+                MessageResponse {
                     message: String::from("Authorization failed"),
                     success: false
                 }
@@ -244,7 +288,7 @@ async fn login(
     }
 
     return (StatusCode::OK, Json(
-                LoginResponse {
+                MessageResponse {
                     message: String::from("Success!"),
                     success: true
                 }
