@@ -2,6 +2,20 @@
   var form: HTMLFormElement;
   var span: HTMLElement;
 
+
+  // Direct complaints here:
+  // https://stackoverflow.com/a/37856924/3697905
+  function getCookies (cookieStr: string) {
+    return cookieStr.split(";")
+      .map(str => str.trim().split(/=(.+)/))
+      .reduce((acc: Record<string, string>, curr: string[]) => {
+          acc[curr[0]] = curr[1];
+          return acc;
+      }, {})
+  }
+
+  console.log(getCookies(document.cookie));
+
   window.onload = function () {
     form = document.querySelector("#login_info") as HTMLFormElement;
     span = document.querySelector("#flash") as HTMLSpanElement;

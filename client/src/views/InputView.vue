@@ -1,7 +1,24 @@
 <script setup lang="ts">
-  import PlayerStatsInput from "../components/PlayerStatsInput.vue"
+  import MarioPartyOneInput from "@/components/MarioPartyOneInput.vue";
+  import MarioPartyTwoInput from "@/components/MarioPartyTwoInput.vue";
+  import MarioPartyThreeInput from "@/components/MarioPartyThreeInput.vue";
+  import MarioPartyFourInput from "@/components/MarioPartyFourInput.vue";
+  import MarioPartyFiveInput from "@/components/MarioPartyFiveInput.vue";
+  import MarioPartySixInput from "@/components/MarioPartySixInput.vue";
+  import MarioPartySevenInput from "@/components/MarioPartySevenInput.vue";
+  import MarioPartyEightInput from "@/components/MarioPartyEightInput.vue";
+  import MarioPartyNineInput from "@/components/MarioPartyNineInput.vue";
+  import MarioPartyTenInput from "@/components/MarioPartyTenInput.vue";
   import { ref } from 'vue'
   import type { Ref } from 'vue'
+  import MarioPartyDSInput from "@/components/MarioPartyDSInput.vue";
+  import MarioPartyStarRushInput from "@/components/MarioPartyStarRushInput.vue";
+  import MarioPartyIslandTourInput from "@/components/MarioPartyIslandTourInput.vue";
+  import MarioPartyTop100Input from "@/components/MarioPartyTop100Input.vue";
+  import SuperMarioPartyInput from "@/components/SuperMarioPartyInput.vue";
+  import MarioPartySuperstarsInput from "@/components/MarioPartySuperstarsInput.vue";
+
+  const selected_game = defineModel();
 
   const possible_boards: Ref<string[]> = ref([])
 
@@ -64,10 +81,6 @@
       "Thirsty Gulch",
       "Astro Avenue",
       "Infernal Tower"
-    ],
-    "Mario Party Advance": [
-      "Shroom City",
-      "Bonus Board"
     ],
     "Mario Party 7": [
       "Grand Canal",
@@ -156,7 +169,6 @@
     ]
   }
 
-
   function on_game_change(event: Event) {
     if (event.target instanceof HTMLSelectElement) {
       possible_boards.value = all_boards[event.target.value];
@@ -181,7 +193,7 @@
           <label for="game">Game</label>
           <label for="board">Board</label>
           <label for="turns">Turns</label>
-          <select id="game" v-on:input="on_game_change">
+          <select id="game" v-on:input="on_game_change" v-model="selected_game">
             <option disabled selected value> -- Game -- </option>
             <option value="Mario Party">Mario Party</option>
             <option value="Mario Party 2">Mario Party 2</option>
@@ -189,7 +201,6 @@
             <option value="Mario Party 4">Mario Party 4</option>
             <option value="Mario Party 5">Mario Party 5</option>
             <option value="Mario Party 6">Mario Party 6</option>
-            <option value="Mario Party Advance">Mario Party Advance</option>
             <option value="Mario Party 7">Mario Party 7</option>
             <option value="Mario Party 8">Mario Party 8</option>
             <option value="Mario Party DS">Mario Party DS</option>
@@ -208,10 +219,23 @@
           <input id="turns" type="number" />
         </div>
 
-        <PlayerStatsInput />
-        <PlayerStatsInput />
-        <PlayerStatsInput />
-        <PlayerStatsInput />
+
+        <MarioPartyOneInput v-for="_ in 4" v-if="selected_game == 'Mario Party'" />
+        <MarioPartyTwoInput v-for="_ in 4" v-if="selected_game == 'Mario Party 2'" />
+        <MarioPartyThreeInput v-for="_ in 4" v-if="selected_game == 'Mario Party 3'" />
+        <MarioPartyFourInput v-for="_ in 4" v-if="selected_game == 'Mario Party 4'" />
+        <MarioPartyFiveInput v-for="_ in 4" v-if="selected_game == 'Mario Party 5'" />
+        <MarioPartySixInput v-for="_ in 4" v-if="selected_game == 'Mario Party 6'" />
+        <MarioPartySevenInput v-for="_ in 4" v-if="selected_game == 'Mario Party 7'" />
+        <MarioPartyEightInput v-for="_ in 4" v-if="selected_game == 'Mario Party 8'" />
+        <MarioPartyDSInput v-for="_ in 4" v-if="selected_game == 'Mario Party DS'" />
+        <MarioPartyNineInput v-for="_ in 4" v-if="selected_game == 'Mario Party 9'" />
+        <MarioPartyIslandTourInput v-for="_ in 4" v-if="selected_game == 'Mario Party: Island Tour'"/>
+        <MarioPartyTenInput v-for="_ in 4" v-if="selected_game == 'Mario Party 10'" />
+        <MarioPartyStarRushInput v-for="_ in 4" v-if="selected_game == 'Mario Party: Star Rush'"/>
+        <MarioPartyTop100Input v-for="_ in 4" v-if="selected_game == 'Mario Party: The Top 100'"/>
+        <SuperMarioPartyInput v-for="_ in 4" v-if="selected_game == 'Super Mario Party'"/>
+        <MarioPartySuperstarsInput v-for="_ in 4" v-if="selected_game == 'Mario Party Superstars'"/>
 
         <input type="submit" class="submit-button" value="Submit" />
       </div>
