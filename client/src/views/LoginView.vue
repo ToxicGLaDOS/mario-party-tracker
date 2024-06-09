@@ -54,7 +54,7 @@
 
 <template>
   <main>
-    <form id="login_info" action="/login" method="post">
+    <form id="login_info">
       <div class="vertical-align">
         <h1 class="title">Login</h1>
         <span id="flash"></span>
