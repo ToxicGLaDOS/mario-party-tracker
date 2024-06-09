@@ -1,24 +1,9 @@
 <script setup lang="ts">
-  import MarioPartyOneInput from "@/components/MarioPartyOneInput.vue";
-  import MarioPartyTwoInput from "@/components/MarioPartyTwoInput.vue";
-  import MarioPartyThreeInput from "@/components/MarioPartyThreeInput.vue";
-  import MarioPartyFourInput from "@/components/MarioPartyFourInput.vue";
-  import MarioPartyFiveInput from "@/components/MarioPartyFiveInput.vue";
-  import MarioPartySixInput from "@/components/MarioPartySixInput.vue";
-  import MarioPartySevenInput from "@/components/MarioPartySevenInput.vue";
-  import MarioPartyEightInput from "@/components/MarioPartyEightInput.vue";
-  import MarioPartyNineInput from "@/components/MarioPartyNineInput.vue";
-  import MarioPartyTenInput from "@/components/MarioPartyTenInput.vue";
-  import { ref } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import type { Ref } from 'vue'
-  import MarioPartyDSInput from "@/components/MarioPartyDSInput.vue";
-  import MarioPartyStarRushInput from "@/components/MarioPartyStarRushInput.vue";
-  import MarioPartyIslandTourInput from "@/components/MarioPartyIslandTourInput.vue";
-  import MarioPartyTop100Input from "@/components/MarioPartyTop100Input.vue";
-  import SuperMarioPartyInput from "@/components/SuperMarioPartyInput.vue";
-  import MarioPartySuperstarsInput from "@/components/MarioPartySuperstarsInput.vue";
+  import MarioPartyInput from "@/components/MarioPartyInput.vue";
 
-  const selected_game = defineModel();
+  const selected_game = defineModel<string>();
 
   const possible_boards: Ref<string[]> = ref([])
 
@@ -180,11 +165,106 @@
     }
   }
 
+  var form: HTMLFormElement;
+
+  onMounted(() => {
+    form = document.querySelector("#input_form") as HTMLFormElement;
+
+    // Take over form submission
+    form.addEventListener("submit", (event) => {
+      console.log("submit");
+
+      console.log(event.target);
+      event.preventDefault();
+      sendData();
+    });
+  })
+
+  async function sendData() {
+    console.log(form);
+    // Associate the FormData object with the form element
+    const formData = new FormData(form);
+
+    var data: any = {
+      player_data: [
+        {},
+        {},
+        {},
+        {}
+      ]
+    }
+
+    for (var key of formData.keys()) {
+      var values = formData.getAll(key);
+
+      if (values.length == 4) {
+        for (var i = 0; i < values.length; i++) {
+          if ((document.getElementsByName(key)[0] as (HTMLSelectElement|HTMLInputElement)).type == "number") {
+
+            // TODO: Remove this, we don't want defaults
+            var value = parseInt(values[i].toString());
+            if (isNaN(value)) {
+              data.player_data[i][key] = 0;
+            }
+            else {
+              data.player_data[i][key] = value;
+            }
+          }
+          else {
+            data.player_data[i][key] = values[i];
+          }
+        }
+      }
+      else if (values.length == 1) {
+        if (key == "turns") { 
+          // TODO: Remove this, we don't want defaults
+          var value = parseInt(values[0].toString());
+          if (isNaN(value)) {
+            data[key] = 0;
+          }
+          else {
+            data[key] = value;
+          }
+
+        }
+        else {
+          data[key] = values[0];
+        }
+      }
+      else {
+        throw Error("Unexpected number of values in form");
+      }
+    }
+
+    console.log(formData);
+    console.log(data);
+
+    var response = await fetch("/api/games", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data)
+    })
+  }
+
+  var input_schemas = await fetch("/api/input/schema")
+    .then( response => response.json());
+
+  const input_schema = computed(() => {
+    if (selected_game.value !== undefined && selected_game.value in input_schemas) {
+      console.log(selected_game.value in input_schemas);
+      return input_schemas[selected_game.value];
+    }
+    else {
+      return []
+    }
+  })
 </script>
 
 <template>
   <main> 
-    <form>
+    <form id="input_form">
       <div class="vertical-align">
         <h1 class="title">
           Mario Party Data Input
@@ -192,8 +272,8 @@
         <div class="game-info-container">
           <label for="game">Game</label>
           <label for="board">Board</label>
-          <label for="turns">Turns</label>
-          <select id="game" v-on:input="on_game_change" v-model="selected_game">
+          <label for="turns" type="number">Turns</label>
+          <select name="game" id="game" v-on:input="on_game_change" v-model="selected_game">
             <option disabled selected value> -- Game -- </option>
             <option value="Mario Party">Mario Party</option>
             <option value="Mario Party 2">Mario Party 2</option>
@@ -212,30 +292,15 @@
             <option value="Super Mario Party">Super Mario Party</option>
             <option value="Mario Party Superstars">Mario Party Superstars</option>
           </select>
-          <select id="board">
+          <select name="board" id="board">
             <option disabled selected value="disabled"> -- Board -- </option>
             <option :value=board v-for="board in possible_boards">{{board}}</option>
           </select>
-          <input id="turns" type="number" />
+          <input name="turns" id="turns" type="number" />
         </div>
 
 
-        <MarioPartyOneInput v-for="_ in 4" v-if="selected_game == 'Mario Party'" />
-        <MarioPartyTwoInput v-for="_ in 4" v-if="selected_game == 'Mario Party 2'" />
-        <MarioPartyThreeInput v-for="_ in 4" v-if="selected_game == 'Mario Party 3'" />
-        <MarioPartyFourInput v-for="_ in 4" v-if="selected_game == 'Mario Party 4'" />
-        <MarioPartyFiveInput v-for="_ in 4" v-if="selected_game == 'Mario Party 5'" />
-        <MarioPartySixInput v-for="_ in 4" v-if="selected_game == 'Mario Party 6'" />
-        <MarioPartySevenInput v-for="_ in 4" v-if="selected_game == 'Mario Party 7'" />
-        <MarioPartyEightInput v-for="_ in 4" v-if="selected_game == 'Mario Party 8'" />
-        <MarioPartyDSInput v-for="_ in 4" v-if="selected_game == 'Mario Party DS'" />
-        <MarioPartyNineInput v-for="_ in 4" v-if="selected_game == 'Mario Party 9'" />
-        <MarioPartyIslandTourInput v-for="_ in 4" v-if="selected_game == 'Mario Party: Island Tour'"/>
-        <MarioPartyTenInput v-for="_ in 4" v-if="selected_game == 'Mario Party 10'" />
-        <MarioPartyStarRushInput v-for="_ in 4" v-if="selected_game == 'Mario Party: Star Rush'"/>
-        <MarioPartyTop100Input v-for="_ in 4" v-if="selected_game == 'Mario Party: The Top 100'"/>
-        <SuperMarioPartyInput v-for="_ in 4" v-if="selected_game == 'Super Mario Party'"/>
-        <MarioPartySuperstarsInput v-for="_ in 4" v-if="selected_game == 'Mario Party Superstars'"/>
+        <MarioPartyInput v-for="_ in 4" :input_schema="input_schema" />
 
         <input type="submit" class="submit-button" value="Submit" />
       </div>

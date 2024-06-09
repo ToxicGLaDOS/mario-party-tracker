@@ -1,10 +1,12 @@
 use tokio;
 use tokio::task;
 use clap::Parser;
+use regex::Regex;
 use std::env;
+use std::collections::HashMap;
 use sqlx::FromRow;
 use sqlx::postgres::{PgPool, PgPoolOptions};
-use serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize, de::Error as SerdeError, Deserializer};
 use password_auth::{generate_hash, verify_password};
 use axum::{
     Extension,
@@ -149,6 +151,8 @@ async fn main() -> Result<(), sqlx::Error> {
         .route_layer(login_required!(Backend, login_url = "/login"))
         .route("/api/login", post(login))
         .route("/api/signup", post(signup))
+        .route("/api/games", post(games))
+        .route("/api/input/schema", get(input_schema))
         .layer(auth_layer)
         .layer(
             ServiceBuilder::new()
@@ -212,7 +216,141 @@ struct MessageResponse {
     success: bool
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+struct GameData {
+    game: String,
+    board: String,
+    turns: i32,
+    player_data: Vec<MarioPartyData>
+}
+
+
+#[derive(Serialize, Debug)]
+struct Field {
+    name: String,
+    thetype: String
+}
+
+macro_rules! expose_field_data {
+    ($(#[$macro:ident $tokens:tt])* enum $name:ident { $($variantname:ident { $($fname:ident : $ftype:ty),* $(,)? }),* $(,)?}) => {
+        $(#[$macro $tokens])*
+        enum $name {
+            $($variantname { $($fname : $ftype),* }),*
+        }
+
+        impl $name {
+            fn field_data() -> HashMap<&'static str, Vec<Field>> {
+                let mut map = HashMap::new();
+                $(
+                    let mut v = Vec::new();
+                    $(
+                        v.push(
+                            Field {
+                                name: stringify!($fname).to_string(),
+                                thetype: stringify!($ftype).to_string()
+                            }
+                        );
+                    )*
+                    map.insert(stringify!($variantname), v);
+                )*
+                map
+            }
+        }
+    }
+}
+
+
+expose_field_data! {
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(untagged)]
+enum MarioPartyData {
+    MarioParty {
+        player_name: String,
+        character: String,
+        stars: i32,
+        coins: i32,
+        minigame_coins: i32,
+        peak_coins: i32,
+        blue_spaces: i32,
+        red_spaces: i32,
+        question_spaces: i32,
+        minigame_spaces: i32,
+        exclaimation_spaces: i32,
+        mushroom_spaces: i32,
+        bowser_spaces: i32
+    },
+    MarioParty2 {
+        player_name: String,
+        character: String,
+        stars: i32,
+        coins: i32,
+        minigame_coins: i32,
+        peak_coins: i32,
+        blue_spaces: i32,
+        red_spaces: i32,
+        question_spaces: i32,
+        exclaimation_spaces: i32,
+        bowser_spaces: i32,
+        battle_spaces: i32,
+        item_spaces: i32,
+        bank_spaces: i32,
+    },
+    MarioParty3 {
+        player_name: String,
+        character: String,
+        stars: i32,
+        coins: i32,
+        minigame_coins: i32,
+        peak_coins: i32,
+        blue_spaces: i32,
+        red_spaces: i32,
+        question_spaces: i32,
+        exclaimation_spaces: i32,
+        bowser_spaces: i32,
+        battle_spaces: i32,
+        item_spaces: i32,
+        bank_spaces: i32,
+        game_guy_spaces: i32,
+    }
+}
+}
+
 type AuthSession = axum_login::AuthSession<Backend>;
+
+#[axum::debug_handler]
+async fn input_schema() -> impl IntoResponse {
+    let re = Regex::new(r"([A-Z]|[0-9]+)").unwrap();
+    let mut field_data = MarioPartyData::field_data();
+    let mut new_data: HashMap<String, Vec<Field>> = HashMap::new();
+    for (key, value) in field_data.drain() {
+        let after = re.replace_all(key, " $1");
+        new_data.insert(after.clone().trim().to_string(), value);
+    }
+
+    return Json(new_data);
+}
+
+#[axum::debug_handler]
+async fn games(
+    Extension(pool): Extension<PgPool>,
+    mut auth_session: AuthSession,
+    Json(mp_data): Json<GameData>
+) -> impl IntoResponse {
+    println!("data: {mp_data:?}");
+    for data in mp_data.player_data {
+        match data {
+            MarioPartyData::MarioParty { .. } => {
+                println!("Mario party one");
+            },
+            MarioPartyData::MarioParty2 { .. } => {
+                println!("Mario party two");
+            },
+            MarioPartyData::MarioParty3 { .. } => {
+                println!("Mario party three");
+            }
+        }
+    }
+}
 
 #[axum::debug_handler]
 async fn signup(

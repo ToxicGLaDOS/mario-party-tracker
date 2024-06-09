@@ -11,6 +11,7 @@ axum = { version = "0.7.5", features = ["macros"] }
 axum-login = "0.15.1"
 clap = {version="4.5.4", features=["derive"]}
 password-auth = "1.0.0"
+regex = "1.10.5"
 serde = { version = "1.0.203", features = ["derive"] }
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls", "chrono", "postgres" ] }
 thiserror = "1.0.61"
