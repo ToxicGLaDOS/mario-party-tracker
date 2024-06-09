@@ -177,7 +177,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
 #[derive(Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    id: i64,
+    id: i32,
     pub username: String,
     password_hash: String,
 }
@@ -195,7 +195,7 @@ impl std::fmt::Debug for User {
 }
 
 impl AuthUser for User {
-    type Id = i64;
+    type Id = i32;
 
     fn id(&self) -> Self::Id {
         self.id
