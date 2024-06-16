@@ -15,10 +15,31 @@ use axum_login::{
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, services::ServeDir, services::ServeFile};
 use crate::routes::Backend;
+use listfields_derive::ListFields;
 
 pub mod routes;
 pub mod requests;
 pub mod responses;
+
+trait ListFields {
+    fn answer() -> &'static str{
+        "default"
+    }
+
+    fn list_fields() -> EnumData;
+}
+
+#[derive(Debug)]
+struct EnumData {
+    name: String,
+    variants: Vec<Variant>
+}
+
+#[derive(Debug)]
+struct Variant {
+    name: String,
+    ty: String
+}
 
 #[derive(Parser, Debug)]
 struct CliOptions {
@@ -39,8 +60,28 @@ struct CliOptions {
     dev: bool
 }
 
+struct Bar {
+    a: String
+}
+
+struct Baz {
+    b: i32
+}
+
+struct WhoKnowsWhat {
+    c: String
+}
+
+#[derive(ListFields)]
+enum Foo {
+    FirstOne(Vec<Bar>),
+    SecondTwo(Vec<Baz>),
+    ThirdThree(Vec<WhoKnowsWhat>)
+}
+
 #[tokio::main]
 async fn main() -> Result<(), sqlx::Error> {
+    println!("impl is working!: {:?}", Foo::list_fields());
     let opts = CliOptions::parse();
 
     // Defaults values correspond to development postgres, not production

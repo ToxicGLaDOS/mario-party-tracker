@@ -10,10 +10,14 @@ async-trait = "0.1.80"
 axum = { version = "0.7.5", features = ["macros"] }
 axum-login = "0.15.1"
 clap = {version="4.5.4", features=["derive"]}
+listfields-derive = { version = "0.1.0", path = "listfields-derive" }
 password-auth = "1.0.0"
+proc-macro2 = "1.0.85"
+quote = "1.0.36"
 regex = "1.10.5"
 serde = { version = "1.0.203", features = ["derive"] }
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls", "chrono", "postgres" ] }
+syn = {version = "2.0.66", features = ["full"]}
 thiserror = "1.0.61"
 tokio = {version="1.38.0",  features = ["full"]}
 tower = "0.4.13"

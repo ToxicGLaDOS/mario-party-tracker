@@ -123,19 +123,19 @@ pub async fn games(
     Json(mp_data): Json<GameData>
 ) -> impl IntoResponse {
     println!("data: {mp_data:?}");
-    for data in mp_data.player_data {
-        match data {
-            MarioPartyData::MarioParty { .. } => {
-                println!("Mario party one");
-            },
-            MarioPartyData::MarioParty2 { .. } => {
-                println!("Mario party two");
-            },
-            MarioPartyData::MarioParty3 { .. } => {
-                println!("Mario party three");
-            }
-        }
-    }
+    //for data in mp_data.player_data {
+    //    match data {
+    //        MarioPartyData::MarioParty { .. } => {
+    //            println!("Mario party one");
+    //        },
+    //        MarioPartyData::MarioParty2 { .. } => {
+    //            println!("Mario party two");
+    //        },
+    //        MarioPartyData::MarioParty3 { .. } => {
+    //            println!("Mario party three");
+    //        },
+    //    }
+    //}
 }
 
 #[axum::debug_handler]
@@ -212,7 +212,7 @@ pub async fn login(
     }
 
     return (StatusCode::OK, Json(
-                MessageResponse {
+    MessageResponse {
                     message: String::from("Success!"),
                     success: true
                 }
@@ -221,13 +221,54 @@ pub async fn login(
 
 #[axum::debug_handler]
 pub async fn input_schema() -> impl IntoResponse {
-    let re = Regex::new(r"([A-Z]|[0-9]+)").unwrap();
-    let mut field_data = MarioPartyData::field_data();
-    let mut new_data: HashMap<String, Vec<Field>> = HashMap::new();
-    for (key, value) in field_data.drain() {
-        let after = re.replace_all(key, " $1");
-        new_data.insert(after.clone().trim().to_string(), value);
-    }
+    // A mapping to override names that would be difficult to get
+    // right under the constraints of variable naming
+    // (can't have a ":" in variable names mostly)
+    let variant_name_override: HashMap<&str, &str> = HashMap::from([
+        ("MarioPartyDS", "Mario Party DS"),
+        ("MarioPartyIslandTour", "Mario Party: Island Tour"),
+        ("MarioPartyStarRush", "Mario Party: Star Rush"),
+        ("MarioPartyTop100", "Mario Party: The Top 100")
+    ]);
 
-    return Json(new_data);
+    //let re = Regex::new(r"([A-Z]|[0-9]+)").unwrap();
+    //let mut field_data = MarioPartyData::field_data();
+    //let mut new_data: HashMap<String, Vec<Field>> = HashMap::new();
+    //for (variant, fields) in field_data.drain() {
+    //    if let Some(new_name) = variant_name_override.get(variant) {
+    //        new_data.insert(new_name.to_string(), fields);
+    //    }
+    //    else {
+    //        let after = re.replace_all(variant, " $1");
+    //        new_data.insert(after.clone().trim().to_string(), fields);
+    //    }
+    //}
+
+    let mut h: HashMap<String, Vec<Field>> = HashMap::new();
+
+
+    let mut v = Vec::new();
+    v.push(Field{
+        name: "player_name".to_string(),
+        thetype: "String".to_string()
+    });
+    v.push(Field{
+        name: "character".to_string(),
+        thetype: "String".to_string()
+    });
+    v.push(Field{
+        name: "stars".to_string(),
+        thetype: "i32".to_string()
+    });
+    v.push(Field{
+        name: "coins".to_string(),
+        thetype: "i32".to_string()
+    });
+
+    h.insert("Mario Party DS".to_string(), v.clone());
+    h.insert("Mario Party: Star Rush".to_string(), v.clone());
+
+
+    //return Json(new_data);
+    return Json(h);
 }
