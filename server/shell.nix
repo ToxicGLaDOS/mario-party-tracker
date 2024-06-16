@@ -14,5 +14,5 @@ in
       # to use the project's rust-toolchain file:
       #(nixpkgs.rustChannelOf { rustToolchain = ./rust-toolchain; }).rust
     ];
-    nativeBuildInputs = with pkgs.buildPackages; [ cargo-watch ];
+    nativeBuildInputs = with pkgs.buildPackages; [ cargo-watch cargo-expand ];
   }

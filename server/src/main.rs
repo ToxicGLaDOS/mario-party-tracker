@@ -15,10 +15,15 @@ use axum_login::{
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, services::ServeDir, services::ServeFile};
 use crate::routes::Backend;
+use listfields_derive::ListFields;
+use crate::requests::MarioPartyData;
+use crate::listfields::{ObjectData, EnumData, Variant, ListFields, Field};
 
 pub mod routes;
 pub mod requests;
 pub mod responses;
+pub mod listfields;
+
 
 #[derive(Parser, Debug)]
 struct CliOptions {

@@ -18,8 +18,8 @@ use axum_login::{
     AuthnBackend,
     UserId};
 use crate::requests::{GameData, MarioPartyData};
-use crate::requests::Field;
 use crate::responses::MessageResponse;
+use crate::listfields::{ListFields, Field, EnumData, ObjectData};
 
 type AuthSession = axum_login::AuthSession<Backend>;
 
@@ -123,19 +123,19 @@ pub async fn games(
     Json(mp_data): Json<GameData>
 ) -> impl IntoResponse {
     println!("data: {mp_data:?}");
-    for data in mp_data.player_data {
-        match data {
-            MarioPartyData::MarioParty { .. } => {
-                println!("Mario party one");
-            },
-            MarioPartyData::MarioParty2 { .. } => {
-                println!("Mario party two");
-            },
-            MarioPartyData::MarioParty3 { .. } => {
-                println!("Mario party three");
-            }
-        }
-    }
+    //for data in mp_data.player_data {
+    //    match data {
+    //        MarioPartyData::MarioParty { .. } => {
+    //            println!("Mario party one");
+    //        },
+    //        MarioPartyData::MarioParty2 { .. } => {
+    //            println!("Mario party two");
+    //        },
+    //        MarioPartyData::MarioParty3 { .. } => {
+    //            println!("Mario party three");
+    //        },
+    //    }
+    //}
 }
 
 #[axum::debug_handler]
@@ -212,7 +212,7 @@ pub async fn login(
     }
 
     return (StatusCode::OK, Json(
-                MessageResponse {
+    MessageResponse {
                     message: String::from("Success!"),
                     success: true
                 }
@@ -221,13 +221,18 @@ pub async fn login(
 
 #[axum::debug_handler]
 pub async fn input_schema() -> impl IntoResponse {
-    let re = Regex::new(r"([A-Z]|[0-9]+)").unwrap();
-    let mut field_data = MarioPartyData::field_data();
-    let mut new_data: HashMap<String, Vec<Field>> = HashMap::new();
-    for (key, value) in field_data.drain() {
-        let after = re.replace_all(key, " $1");
-        new_data.insert(after.clone().trim().to_string(), value);
+    let mut h: HashMap<String, Vec<Field>> = HashMap::new();
+
+    if let ObjectData::EnumData(EnumData { name, variants }) = MarioPartyData::list_fields() {
+        for variant in variants {
+            match variant.type_data {
+                ObjectData::Fields(fields) => {
+                    h.insert(variant.name, fields);
+                },
+                _ => {}
+            }
+        }
     }
 
-    return Json(new_data);
+    return Json(h);
 }
