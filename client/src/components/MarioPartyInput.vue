@@ -3,7 +3,7 @@
   import type { PropType } from 'vue'
   interface Field {
     name: string,
-    thetype: string
+    ty: string
   }
 
   const props = defineProps({
@@ -21,7 +21,7 @@
 <template>
   <div class="player-stats-container">
     <label v-for="field in input_schema" :for="field.name">{{ field.name }}</label>
-    <input v-for="field in input_schema" :id="field.name" :name="field.name" :type="field.thetype == 'i32' ? 'number': 'text'" />
+    <input v-for="field in input_schema" :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
   </div>
 </template>
 
