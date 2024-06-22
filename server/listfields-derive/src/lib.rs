@@ -118,6 +118,11 @@ impl Parse for Var {
 
 impl Parse for Field {
     fn parse(input: ParseStream) -> syn::Result<Self> {
+        let lookahead = input.lookahead1();
+        if lookahead.peek(Token![pub]) {
+            let _ = input.parse::<Visibility>();
+        }
+
         let name: Ident = input.parse()?;
         input.parse::<Token![:]>()?;
         let ty: Ty = input.parse()?;
@@ -161,6 +166,10 @@ impl Parse for ObjectParsed {
             ));
         }
         else if lookahead.peek(Token![struct]) {
+            let lookahead = input.lookahead1();
+            if lookahead.peek(Token![pub]) {
+                let _ = input.parse::<Visibility>();
+            }
             input.parse::<Token![struct]>()?;
             let content;
             let ident: Ident = input.parse()?;

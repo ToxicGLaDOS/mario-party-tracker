@@ -13,267 +13,267 @@ pub struct GameData {
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    peak_coins: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    question_spaces: i32,
-    minigame_spaces: i32,
-    exclaimation_spaces: i32,
-    mushroom_spaces: i32,
-    bowser_spaces: i32
+pub struct MarioParty {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub peak_coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub question_spaces: i32,
+    pub minigame_spaces: i32,
+    pub exclaimation_spaces: i32,
+    pub mushroom_spaces: i32,
+    pub bowser_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty2 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    peak_coins: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    question_spaces: i32,
-    exclaimation_spaces: i32,
-    bowser_spaces: i32,
-    battle_spaces: i32,
-    item_spaces: i32,
-    bank_spaces: i32,
+pub struct MarioParty2 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub peak_coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub question_spaces: i32,
+    pub exclaimation_spaces: i32,
+    pub bowser_spaces: i32,
+    pub battle_spaces: i32,
+    pub item_spaces: i32,
+    pub bank_spaces: i32,
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty3 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    peak_coins: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    question_spaces: i32,
-    exclaimation_spaces: i32,
-    bowser_spaces: i32,
-    battle_spaces: i32,
-    item_spaces: i32,
-    bank_spaces: i32,
-    game_guy_spaces: i32,
+pub struct MarioParty3 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub peak_coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub question_spaces: i32,
+    pub exclaimation_spaces: i32,
+    pub bowser_spaces: i32,
+    pub battle_spaces: i32,
+    pub item_spaces: i32,
+    pub bank_spaces: i32,
+    pub game_guy_spaces: i32,
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty4 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    peak_coins: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    happening_spaces: i32,
-    fortune_spaces: i32,
-    bowser_spaces: i32,
-    battle_spaces: i32,
-    mushroom_spaces: i32,
-    warp_spaces: i32
+pub struct MarioParty4 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub peak_coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub happening_spaces: i32,
+    pub fortune_spaces: i32,
+    pub bowser_spaces: i32,
+    pub battle_spaces: i32,
+    pub mushroom_spaces: i32,
+    pub warp_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty5 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    peak_coins: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    capsule_spaces: i32,
-    question_spaces: i32,
-    bowser_spaces: i32,
-    dk_spaces: i32
+pub struct MarioParty5 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub peak_coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub capsule_spaces: i32,
+    pub question_spaces: i32,
+    pub bowser_spaces: i32,
+    pub dk_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty6 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    orbs_used: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    character_spaces: i32,
-    question_spaces: i32,
-    duel_spaces: i32,
-    miracle_spaces: i32,
-    bowser_spaces: i32,
-    dk_spaces: i32
+pub struct MarioParty6 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub orbs_used: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub character_spaces: i32,
+    pub question_spaces: i32,
+    pub duel_spaces: i32,
+    pub miracle_spaces: i32,
+    pub bowser_spaces: i32,
+    pub dk_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty7 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    coins_spent_on_orbs: i32,
-    orbs_used: i32,
-    spaces_moved: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    character_spaces: i32,
-    green_spaces: i32,
-    duel_spaces: i32,
-    mic_spaces: i32,
-    dk_spaces: i32,
-    bowser_spaces: i32
+pub struct MarioParty7 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub coins_spent_on_orbs: i32,
+    pub orbs_used: i32,
+    pub spaces_moved: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub character_spaces: i32,
+    pub green_spaces: i32,
+    pub duel_spaces: i32,
+    pub mic_spaces: i32,
+    pub dk_spaces: i32,
+    pub bowser_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty8 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    coins_spent_in_shop: i32,
-    candy_eaten: i32,
-    spaces_moved: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    green_spaces: i32,
-    lucky_spaces: i32,
-    dk_spaces: i32,
-    bowser_spaces: i32
+pub struct MarioParty8 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub coins_spent_in_shop: i32,
+    pub candy_eaten: i32,
+    pub spaces_moved: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub green_spaces: i32,
+    pub lucky_spaces: i32,
+    pub dk_spaces: i32,
+    pub bowser_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty9 {
-    player_name: String,
-    character: String,
-    mini_stars: i32,
-    mini_stars_lost: i32,
-    minigame_stars: i32,
-    minigame_stars_lost: i32,
-    event_mini_stars: i32,
-    event_mini_stars_lost: i32,
-    bonus_star_mini_stars: i32,
-    dice_block_spaces: i32,
-    lucky_spaces: i32,
-    unlucky_spaces: i32,
-    spin_spaces: i32,
-    event_spaces: i32,
-    shuffle_spaces: i32,
-    bowser_spaces: i32,
-    captain_event_spaces: i32,
-    boss_battle_spaces: i32,
-    dash_spaces: i32,
-    back_spaces: i32,
-    free_for_all_spaces: i32,
-    one_v_three_spaces: i32,
-    battle_spaces: i32,
-    bowser_jr_spaces: i32
+pub struct MarioParty9 {
+    pub player_name: String,
+    pub character: String,
+    pub mini_stars: i32,
+    pub mini_stars_lost: i32,
+    pub minigame_stars: i32,
+    pub minigame_stars_lost: i32,
+    pub event_mini_stars: i32,
+    pub event_mini_stars_lost: i32,
+    pub bonus_star_mini_stars: i32,
+    pub dice_block_spaces: i32,
+    pub lucky_spaces: i32,
+    pub unlucky_spaces: i32,
+    pub spin_spaces: i32,
+    pub event_spaces: i32,
+    pub shuffle_spaces: i32,
+    pub bowser_spaces: i32,
+    pub captain_event_spaces: i32,
+    pub boss_battle_spaces: i32,
+    pub dash_spaces: i32,
+    pub back_spaces: i32,
+    pub free_for_all_spaces: i32,
+    pub one_v_three_spaces: i32,
+    pub battle_spaces: i32,
+    pub bowser_jr_spaces: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioParty10 {
-    player_name: String,
-    character: String,
-    mini_stars: i32
+pub struct MarioParty10 {
+    pub player_name: String,
+    pub character: String,
+    pub mini_stars: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioPartyDS {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32
+pub struct MarioPartyDS {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioPartyIslandTour {
-    player_name: String,
-    character: String,
-    green_spaces: i32,
-    item_spaces: i32,
-    dash_spaces: i32,
-    blue_event_spaces: i32,
-    piranha_plant_spaces: i32,
-    red_event_spaces: i32,
-    free_for_all_spaces: i32,
-    bowser_spaces: i32,
-    spaces_moved: i32
+pub struct MarioPartyIslandTour {
+    pub player_name: String,
+    pub character: String,
+    pub green_spaces: i32,
+    pub item_spaces: i32,
+    pub dash_spaces: i32,
+    pub blue_event_spaces: i32,
+    pub piranha_plant_spaces: i32,
+    pub red_event_spaces: i32,
+    pub free_for_all_spaces: i32,
+    pub bowser_spaces: i32,
+    pub spaces_moved: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioPartyStarRush {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32
+pub struct MarioPartyStarRush {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioPartyTop100 {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32
+pub struct MarioPartyTop100 {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct SuperMarioParty {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    hidden_blocks: i32,
-    items_used: i32,
-    allies: i32,
-    spaces_moved: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    lucky_spaces: i32,
-    vs_spaces: i32,
-    event_spaces: i32,
-    item_spaces: i32,
-    ally_spaces: i32,
-    bad_luck_spaces: i32,
-    extra_bad_luck_spaces: i32
+pub struct SuperMarioParty {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub hidden_blocks: i32,
+    pub items_used: i32,
+    pub allies: i32,
+    pub spaces_moved: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub lucky_spaces: i32,
+    pub vs_spaces: i32,
+    pub event_spaces: i32,
+    pub item_spaces: i32,
+    pub ally_spaces: i32,
+    pub bad_luck_spaces: i32,
+    pub extra_bad_luck_spaces: i32
 }
 
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
-struct MarioPartySuperstars {
-    player_name: String,
-    character: String,
-    stars: i32,
-    coins: i32,
-    minigame_coins: i32,
-    hidden_blocks: i32,
-    items_bought: i32,
-    items_used: i32,
-    spaces_moved: i32,
-    blue_spaces: i32,
-    red_spaces: i32,
-    item_spaces: i32,
-    event_spaces: i32,
-    chance_time_spaces: i32,
-    lucky_spaces: i32,
-    bowser_spaces: i32,
-    vs_spaces: i32,
-    koopa_bank_spaces: i32,
-    stickers_used: i32
+pub struct MarioPartySuperstars {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub minigame_coins: i32,
+    pub hidden_blocks: i32,
+    pub items_bought: i32,
+    pub items_used: i32,
+    pub spaces_moved: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub item_spaces: i32,
+    pub event_spaces: i32,
+    pub chance_time_spaces: i32,
+    pub lucky_spaces: i32,
+    pub bowser_spaces: i32,
+    pub vs_spaces: i32,
+    pub koopa_bank_spaces: i32,
+    pub stickers_used: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
