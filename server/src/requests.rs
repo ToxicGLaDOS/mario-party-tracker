@@ -3,13 +3,15 @@ use std::collections::HashMap;
 use std::fmt;
 use listfields_derive::ListFields;
 use crate::listfields::{ObjectData, EnumData, Variant, ListFields, Field};
+use chrono::{DateTime, Utc, Local};
 
 #[derive(Deserialize, Debug)]
 pub struct GameData {
     #[serde(flatten)]
     pub player_data: MarioPartyData,
     pub board: String,
-    pub turns: i32 
+    pub turns: i32,
+    //pub date: DateTime<Local>
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
@@ -277,6 +279,31 @@ pub struct MarioPartySuperstars {
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
+pub struct MarioPartyJamboree {
+    pub player_name: String,
+    pub character: String,
+    pub stars: i32,
+    pub coins: i32,
+    pub blue_spaces: i32,
+    pub red_spaces: i32,
+    pub lucky_spaces: i32,
+    pub unlucky_spaces: i32,
+    pub item_spaces: i32,
+    pub bowser_spaces: i32,
+    pub event_spaces: i32,
+    pub chance_time_spaces: i32, //TODO: Is this what it's called
+    pub vs_spaces: i32,
+    pub coins_received: i32,
+    pub minigames_won: i32,
+    pub hidden_blocks_found: i32,
+    pub showdown_minigames_won: i32,
+    pub items_bought: i32, //TODO: Is this what it is tracking?
+    pub items_used: i32, //TODO: Is this what it is tracking?
+    pub spaces_traveled: i32,
+    pub buddy_spaces_moved: i32, //TODO: This isn't what it is tracking, figure it out
+}
+
+#[derive(Deserialize, ListFields, Clone, Debug)]
 #[serde(tag = "game", content = "player_data")]
 pub enum MarioPartyData {
     #[serde(rename = "Mario Party")]
@@ -310,5 +337,7 @@ pub enum MarioPartyData {
     #[serde(rename = "Super Mario Party")]
     SuperMarioParty(Vec<SuperMarioParty>),
     #[serde(rename = "Mario Party Superstars")]
-    MarioPartySuperstars(Vec<MarioPartySuperstars>)
+    MarioPartySuperstars(Vec<MarioPartySuperstars>),
+    #[serde(rename = "Mario Party Jamboree")]
+    MarioPartyJamboree(Vec<MarioPartyJamboree>)
 }

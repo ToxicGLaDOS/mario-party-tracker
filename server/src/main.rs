@@ -50,6 +50,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     // Defaults values correspond to development postgres, not production
     let pg_user = env::var("POSTGRES_USER").unwrap_or(String::from("postgres"));
+    // TODO: Make this not hardcoded to password haha
     let pg_password = env::var("POSTGRES_PASSWORD").unwrap_or(String::from("password"));
     let pg_host = env::var("POSTGRES_HOST").unwrap_or(String::from("localhost"));
     let pg_port = env::var("POSTGRES_PORT").unwrap_or(String::from("55432"));

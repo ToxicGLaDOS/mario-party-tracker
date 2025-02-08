@@ -466,6 +466,36 @@ pub async fn games(
 
                 err.unwrap();
             }
+        },
+        MarioPartyData::MarioPartyJamboree(players_data) => {
+            for player_data in players_data {
+                let err = sqlx::query("INSERT INTO MarioPartyJamboreeEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)")
+                    .bind(player_data.player_name)
+                    .bind(player_data.character)
+                    .bind(player_data.stars)
+                    .bind(player_data.coins)
+                    .bind(player_data.blue_spaces)
+                    .bind(player_data.red_spaces)
+                    .bind(player_data.lucky_spaces)
+                    .bind(player_data.unlucky_spaces)
+                    .bind(player_data.item_spaces)
+                    .bind(player_data.bowser_spaces)
+                    .bind(player_data.event_spaces)
+                    .bind(player_data.chance_time_spaces)
+                    .bind(player_data.vs_spaces)
+                    .bind(player_data.coins_received)
+                    .bind(player_data.minigames_won)
+                    .bind(player_data.hidden_blocks_found)
+                    .bind(player_data.showdown_minigames_won)
+                    .bind(player_data.items_bought)
+                    .bind(player_data.items_used)
+                    .bind(player_data.spaces_traveled)
+                    .bind(player_data.buddy_spaces_moved)
+                    .execute(&pool)
+                    .await;
+
+                err.unwrap();
+            }
         }
     }
 }

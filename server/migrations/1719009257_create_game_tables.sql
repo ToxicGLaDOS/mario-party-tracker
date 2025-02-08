@@ -262,3 +262,28 @@ CREATE TABLE MarioPartySuperstarsEntries (
     koopa_bank_spaces INTEGER NOT NULL,
     stickers_used INTEGER NOT NULL
 );
+
+CREATE TABLE MarioPartyJamboreeEntries (
+    id SERIAL PRIMARY KEY,
+    player_name TEXT NOT NULL,
+    character TEXT NOT NULL,
+    stars INTEGER NOT NULL,
+    coins INTEGER NOT NULL,
+    blue_spaces INTEGER NOT NULL,
+    red_spaces INTEGER NOT NULL,
+    lucky_spaces INTEGER NOT NULL,
+    unlucky_spaces INTEGER NOT NULL,
+    item_spaces INTEGER NOT NULL,
+    bowser_spaces INTEGER NOT NULL,
+    event_spaces INTEGER NOT NULL,
+    chance_time_spaces INTEGER NOT NULL,
+    vs_spaces INTEGER NOT NULL,
+    coins_received INTEGER NOT NULL,
+    minigames_won INTEGER NOT NULL,
+    hidden_blocks_found INTEGER NOT NULL,
+    showdown_minigames_won INTEGER NOT NULL,
+    items_bought INTEGER NOT NULL,
+    items_used INTEGER NOT NULL,
+    spaces_traveled INTEGER NOT NULL,
+    buddy_spaces_moved INTEGER NOT NULL
+);

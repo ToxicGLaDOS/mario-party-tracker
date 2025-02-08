@@ -151,6 +151,15 @@
       "Space Land",
       "Horror Land",
       "Woody Woods",
+    ],
+    "Mario Party Jamboree": [
+      "Mega Wiggler's Tree Party",
+      "Roll 'em Raceway",
+      "Rainbow Galleria",
+      "Goomba Lagoon",
+      "King Bowser's Keep",
+      "Western Land",
+      "Mario's Rainbow Castle",
     ]
   }
 
@@ -197,6 +206,9 @@
     for (var key of formData.keys()) {
       var values = formData.getAll(key);
 
+      // values.length is how many times we see this entry
+      // so basically == 4 means stuff that happens 4 times
+      // == 1 is stuff that happens once (board, turns, time, etc.)
       if (values.length == 4) {
         for (var i = 0; i < values.length; i++) {
           if ((document.getElementsByName(key)[0] as (HTMLSelectElement|HTMLInputElement)).type == "number") {
@@ -273,6 +285,7 @@
           <label for="game">Game</label>
           <label for="board">Board</label>
           <label for="turns" type="number">Turns</label>
+          <label for="date" type="date">Date</label>
           <select name="game" id="game" v-on:input="on_game_change" v-model="selected_game">
             <option disabled selected value> -- Game -- </option>
             <option value="Mario Party">Mario Party</option>
@@ -291,12 +304,14 @@
             <option value="Mario Party: The Top 100">Mario Party: The Top 100</option>
             <option value="Super Mario Party">Super Mario Party</option>
             <option value="Mario Party Superstars">Mario Party Superstars</option>
+            <option value="Mario Party Jamboree">Mario Party Jamboree</option>
           </select>
           <select name="board" id="board">
             <option disabled selected value="disabled"> -- Board -- </option>
             <option :value=board v-for="board in possible_boards">{{board}}</option>
           </select>
           <input name="turns" id="turns" type="number" />
+          <input name="date" id="date" type="datetime-local" />
         </div>
 
 
@@ -331,7 +346,7 @@
 
   .game-info-container {
     display: grid;
-    grid-template-columns: repeat(3, 33.3333%);
+    grid-template-columns: repeat(4, 25%);
     gap: 10px;
     margin: 75px;
   }

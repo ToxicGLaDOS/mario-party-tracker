@@ -29,6 +29,7 @@
   .player-stats-container {
     display: grid;
     grid-template-columns: repeat(v-bind(columns), auto);
+    width: 90vw;
     gap: 10px;
   }
  
