@@ -18,7 +18,7 @@ use axum_login::{
     AuthUser,
     AuthnBackend,
     UserId};
-use crate::requests::{GameData, MarioPartyData};
+use crate::requests::{GameData, MarioPartyCharacters, MarioPartyData};
 use crate::responses::MessageResponse;
 use crate::listfields::{ListFields, Field, EnumData, ObjectData};
 
@@ -211,7 +211,7 @@ pub async fn games(
             ).into_response();
         }
     }
-
+ 
     match mp_data.player_data {
         MarioPartyData::MarioParty(players_data) => {
             for player_data in players_data {

@@ -14,10 +14,22 @@ pub struct GameData {
     pub date: DateTime<Utc>
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[serde(rename_all = "snake_case")]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyCharacters {
+    Mario,
+    Luigi,
+    PrincessPeach,
+    Yoshi,
+    Wario,
+    DonkeyKong
+}
+
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyCharacters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,

@@ -6,11 +6,13 @@ CREATE TABLE Games (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
+CREATE TYPE MarioPartyCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'donkey_kong');
+
 CREATE TABLE MarioPartyEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character MarioPartyCharacters NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
