@@ -163,6 +163,9 @@
     ]
   }
 
+  const snackbar_message = ref("Default message");
+  const snackbar_show = ref(false);
+
   function on_game_change(event: Event) {
     if (event.target instanceof HTMLSelectElement) {
       possible_boards.value = all_boards[event.target.value];
@@ -181,16 +184,12 @@
 
     // Take over form submission
     form.addEventListener("submit", (event) => {
-      console.log("submit");
-
-      console.log(event.target);
       event.preventDefault();
       sendData();
     });
   })
 
   async function sendData() {
-    console.log(form);
     // Associate the FormData object with the form element
     const formData = new FormData(form);
 
@@ -239,6 +238,11 @@
           }
 
         }
+        else if (key == "date") {
+          var date = new Date(values[0].toString())
+          // toISONString always returns UTC time
+          data[key] = date.toISOString()
+        }
         else {
           data[key] = values[0];
         }
@@ -248,9 +252,6 @@
       }
     }
 
-    console.log(formData);
-    console.log(data);
-
     var response = await fetch("/api/games", {
       method: "POST",
       headers: {
@@ -258,6 +259,13 @@
       },
       body: JSON.stringify(data)
     })
+
+    var responseMessage = "";
+    response.json()
+      .then((data) => {
+        responseMessage = data.message;
+        showSnackbar(responseMessage);
+      })
   }
 
   var input_schemas = await fetch("/api/input/schema")
@@ -265,13 +273,20 @@
 
   const input_schema = computed(() => {
     if (selected_game.value !== undefined && selected_game.value in input_schemas) {
-      console.log(selected_game.value in input_schemas);
       return input_schemas[selected_game.value];
     }
     else {
       return []
     }
   })
+
+  function showSnackbar(message: string) {
+    snackbar_message.value = message
+    snackbar_show.value = true;
+    setTimeout(function(){
+      snackbar_show.value = false;
+    }, 3000);
+  }
 </script>
 
 <template>
@@ -281,45 +296,58 @@
         <h1 class="title">
           Mario Party Data Input
         </h1>
-        <div class="game-info-container">
-          <label for="game">Game</label>
-          <label for="board">Board</label>
-          <label for="turns" type="number">Turns</label>
-          <label for="date" type="date">Date</label>
-          <select name="game" id="game" v-on:input="on_game_change" v-model="selected_game">
-            <option disabled selected value> -- Game -- </option>
-            <option value="Mario Party">Mario Party</option>
-            <option value="Mario Party 2">Mario Party 2</option>
-            <option value="Mario Party 3">Mario Party 3</option>
-            <option value="Mario Party 4">Mario Party 4</option>
-            <option value="Mario Party 5">Mario Party 5</option>
-            <option value="Mario Party 6">Mario Party 6</option>
-            <option value="Mario Party 7">Mario Party 7</option>
-            <option value="Mario Party 8">Mario Party 8</option>
-            <option value="Mario Party DS">Mario Party DS</option>
-            <option value="Mario Party 9">Mario Party 9</option>
-            <option value="Mario Party: Island Tour">Mario Party: Island Tour</option>
-            <option value="Mario Party 10">Mario Party 10</option>
-            <option value="Mario Party: Star Rush">Mario Party: Star Rush</option>
-            <option value="Mario Party: The Top 100">Mario Party: The Top 100</option>
-            <option value="Super Mario Party">Super Mario Party</option>
-            <option value="Mario Party Superstars">Mario Party Superstars</option>
-            <option value="Mario Party Jamboree">Mario Party Jamboree</option>
-          </select>
-          <select name="board" id="board">
-            <option disabled selected value="disabled"> -- Board -- </option>
-            <option :value=board v-for="board in possible_boards">{{board}}</option>
-          </select>
-          <input name="turns" id="turns" type="number" />
-          <input name="date" id="date" type="datetime-local" />
+        <div class="game-info-center">
+          <div class="game-info-container">
+            <div class="game-item">
+              <label for="game">Game</label>
+              <select name="game" id="game" v-on:input="on_game_change" v-model="selected_game">
+                <option disabled selected value> -- Game -- </option>
+                <option value="Mario Party">Mario Party</option>
+                <option value="Mario Party 2">Mario Party 2</option>
+                <option value="Mario Party 3">Mario Party 3</option>
+                <option value="Mario Party 4">Mario Party 4</option>
+                <option value="Mario Party 5">Mario Party 5</option>
+                <option value="Mario Party 6">Mario Party 6</option>
+                <option value="Mario Party 7">Mario Party 7</option>
+                <option value="Mario Party 8">Mario Party 8</option>
+                <option value="Mario Party DS">Mario Party DS</option>
+                <option value="Mario Party 9">Mario Party 9</option>
+                <option value="Mario Party: Island Tour">Mario Party: Island Tour</option>
+                <option value="Mario Party 10">Mario Party 10</option>
+                <option value="Mario Party: Star Rush">Mario Party: Star Rush</option>
+                <option value="Mario Party: The Top 100">Mario Party: The Top 100</option>
+                <option value="Super Mario Party">Super Mario Party</option>
+                <option value="Mario Party Superstars">Mario Party Superstars</option>
+                <option value="Mario Party Jamboree">Mario Party Jamboree</option>
+              </select>
+            </div>
+            <div class="game-item" id="board-container">
+              <label for="board">Board</label>
+              <select name="board" id="board">
+                <option disabled selected value="disabled"> -- Board -- </option>
+                <option :value=board v-for="board in possible_boards">{{board}}</option>
+              </select>
+            </div>
+            <div class="game-item">
+              <label for="turns" type="number">Turns</label>
+              <input name="turns" id="turns" type="number" />
+            </div>
+            <div class="game-item">
+              <label for="date" type="date">Date</label>
+              <input name="date" id="date" type="datetime-local" />
+            </div>
+          </div>
         </div>
 
 
-        <MarioPartyInput v-for="_ in 4" :input_schema="input_schema" />
+        <div class="individual-inputs-container">
+          <MarioPartyInput v-for="_ in 4" :input_schema="input_schema" />
+        </div>
 
         <input type="submit" class="submit-button" value="Submit" />
       </div>
     </form>
+    <div id="snackbar" :class="snackbar_show ? 'show' : ''">{{snackbar_message}}</div>
   </main>
 </template>
 
@@ -334,6 +362,10 @@
     min-width: 0;
   }
 
+  #board-container {
+    flex-grow: 1;
+  }
+
   .title {
     align-self: center;
     font-size: 75px;
@@ -344,17 +376,78 @@
     margin: 50px;
   }
 
+  .game-info-center {
+    width: 100%;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+  }
+
+  .game-item {
+    display: flex;
+    flex-direction: column;
+  }
+
   .game-info-container {
-    display: grid;
-    grid-template-columns: repeat(4, 25%);
+    display: flex;
+    padding-top: 20px;
+    padding-bottom: 20px;
     gap: 10px;
-    margin: 75px;
+    width: 100%;
+  }
+
+  .individual-inputs-container {
+    display: flex;
+    align-items: center;
   }
 
   .vertical-align {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
+  }
+
+  #snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    right: 30px;
+    top: 30px;
+    font-size: 17px;
+  }
+
+  #snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+
+  @-webkit-keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+  }
+
+  @keyframes fadein {
+    from {top: 0; opacity: 0;}
+    to {top: 30px; opacity: 1;}
+  }
+
+  @-webkit-keyframes fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
+  }
+
+  @keyframes fadeout {
+    from {top: 30px; opacity: 1;}
+    to {top: 0; opacity: 0;}
   }
 
 </style>

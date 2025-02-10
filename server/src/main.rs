@@ -10,7 +10,7 @@ use axum::{
 };
 use axum_login::{
     login_required,
-    tower_sessions::{MemoryStore, SessionManagerLayer},
+    tower_sessions::{Expiry, MemoryStore, SessionManagerLayer},
     AuthManagerLayerBuilder};
 use tower::ServiceBuilder;
 use tower_http::{cors::CorsLayer, services::ServeDir, services::ServeFile};
@@ -68,7 +68,8 @@ async fn main() -> Result<(), sqlx::Error> {
 
     // Session layer.
     let session_store = MemoryStore::default();
-    let session_layer = SessionManagerLayer::new(session_store);
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_expiry(Expiry::OnSessionEnd);
 
     // Auth service.
     let backend = Backend::new(pool.clone());

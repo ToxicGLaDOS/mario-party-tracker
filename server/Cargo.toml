@@ -17,7 +17,7 @@ proc-macro2 = "1.0.85"
 quote = "1.0.36"
 regex = "1.10.5"
 serde = { version = "1.0.203", features = ["derive"] }
-sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls", "chrono", "postgres" ] }
+sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls", "chrono", "postgres", "time" ] }
 syn = {version = "2.0.66", features = ["full"]}
 thiserror = "1.0.61"
 tokio = {version="1.38.0",  features = ["full"]}

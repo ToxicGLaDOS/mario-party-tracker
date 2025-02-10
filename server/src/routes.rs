@@ -3,7 +3,8 @@ use async_trait::async_trait;
 use tokio::task;
 use std::collections::HashMap;
 use sqlx::postgres::PgPool;
-use sqlx::FromRow;
+use sqlx::{query_scalar, Row};
+use sqlx::{FromRow, Postgres, Transaction};
 use serde::{Serialize, Deserialize};
 use password_auth::{generate_hash, verify_password};
 use axum::{
@@ -106,6 +107,7 @@ impl AuthnBackend for Backend {
         .await?
     }
 
+
     async fn get_user(&self, user_id: &UserId<Self>) -> Result<Option<Self::User>, Self::Error> {
         let user = sqlx::query_as("SELECT * FROM users WHERE id = $1")
             .bind(user_id)
@@ -123,10 +125,98 @@ pub async fn games(
     Json(mp_data): Json<GameData>
 ) -> impl IntoResponse {
     println!("data: {mp_data:?}");
+    let mut tx_result = pool.begin().await;
+    let game_id: i32;
+    let user_id: i32;
+
+    if auth_session.user.is_none() {
+        println!("No user signed in");
+        return (
+            StatusCode::UNAUTHORIZED,
+            Json(
+                MessageResponse {
+                    message: String::from("Not signed in"),
+                    success: false
+                }
+            )
+        ).into_response();
+    }
+
+    let mut tx = match tx_result {
+        Ok(tx) => {
+            tx
+        }
+        Err(e) => {
+            println!("{}", e);
+            println!("Failed to create transaction");
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(
+                    MessageResponse {
+                        message: String::from("Server error"),
+                        success: false
+                    }
+                )
+            ).into_response();
+        }
+    };
+
+    let user_id_result: Result<i32, sqlx::Error> = sqlx::query_scalar("SELECT id FROM Users WHERE username = $1")
+        .bind(auth_session.user.unwrap().username)
+        .fetch_one(&mut *tx)
+        .await;
+
+
+    let user_id = match user_id_result {
+        Ok(user_id) => {
+            user_id
+        }
+        Err(e) => {
+            println!("{}", e);
+            println!("Failed to find user");
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(
+                    MessageResponse {
+                        message: String::from("Server error"),
+                        success: false
+                    }
+                )
+            ).into_response();
+        }
+    };
+
+    let result: Result<i32, sqlx::Error> = sqlx::query_scalar("INSERT INTO Games VALUES (DEFAULT, $1, $2, $3) RETURNING id")
+        .bind(user_id)
+        .bind(mp_data.date)
+        .bind(mp_data.turns)
+        .fetch_one(&mut *tx)
+        .await;
+
+    match result {
+        Ok(res) => {
+            game_id = res;
+        }
+        Err(e) => {
+            println!("{}", e);
+            println!("Failed to insert game");
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(
+                    MessageResponse {
+                        message: String::from("Server error"),
+                        success: false
+                    }
+                )
+            ).into_response();
+        }
+    }
+
     match mp_data.player_data {
         MarioPartyData::MarioParty(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)")
+                let err = sqlx::query("INSERT INTO MarioPartyEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -140,7 +230,7 @@ pub async fn games(
                     .bind(player_data.exclaimation_spaces)
                     .bind(player_data.mushroom_spaces)
                     .bind(player_data.bowser_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -148,7 +238,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty2(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty2Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)")
+                let err = sqlx::query("INSERT INTO MarioParty2Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -163,7 +254,7 @@ pub async fn games(
                     .bind(player_data.battle_spaces)
                     .bind(player_data.item_spaces)
                     .bind(player_data.bank_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -171,7 +262,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty3(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty3Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)")
+                let err = sqlx::query("INSERT INTO MarioParty3Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -187,7 +279,7 @@ pub async fn games(
                     .bind(player_data.item_spaces)
                     .bind(player_data.bank_spaces)
                     .bind(player_data.game_guy_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -195,7 +287,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty4(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty4Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)")
+                let err = sqlx::query("INSERT INTO MarioParty4Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -210,7 +303,7 @@ pub async fn games(
                     .bind(player_data.battle_spaces)
                     .bind(player_data.mushroom_spaces)
                     .bind(player_data.warp_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -218,7 +311,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty5(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty5Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)")
+                let err = sqlx::query("INSERT INTO MarioParty5Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -231,7 +325,7 @@ pub async fn games(
                     .bind(player_data.question_spaces)
                     .bind(player_data.bowser_spaces)
                     .bind(player_data.dk_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -239,7 +333,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty6(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty6Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)")
+                let err = sqlx::query("INSERT INTO MarioParty6Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -254,7 +349,7 @@ pub async fn games(
                     .bind(player_data.miracle_spaces)
                     .bind(player_data.bowser_spaces)
                     .bind(player_data.dk_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -262,7 +357,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty7(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty7Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)")
+                let err = sqlx::query("INSERT INTO MarioParty7Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -279,7 +375,7 @@ pub async fn games(
                     .bind(player_data.mic_spaces)
                     .bind(player_data.dk_spaces)
                     .bind(player_data.bowser_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -287,7 +383,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty8(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty8Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)")
+                let err = sqlx::query("INSERT INTO MarioParty8Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -302,7 +399,7 @@ pub async fn games(
                     .bind(player_data.lucky_spaces)
                     .bind(player_data.dk_spaces)
                     .bind(player_data.bowser_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -310,7 +407,8 @@ pub async fn games(
         },
         MarioPartyData::MarioParty9(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty9Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)")
+                let err = sqlx::query("INSERT INTO MarioParty9Entries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.mini_stars)
@@ -335,7 +433,7 @@ pub async fn games(
                     .bind(player_data.one_v_three_spaces)
                     .bind(player_data.battle_spaces)
                     .bind(player_data.bowser_jr_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -343,11 +441,12 @@ pub async fn games(
         },
         MarioPartyData::MarioParty10(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioParty10Entries VALUES (DEFAULT, $1, $2, $3)")
+                let err = sqlx::query("INSERT INTO MarioParty10Entries VALUES (DEFAULT, $1, $2, $3, $4)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.mini_stars)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -355,12 +454,13 @@ pub async fn games(
         },
         MarioPartyData::MarioPartyDS(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyDSEntries VALUES (DEFAULT, $1, $2, $3, $4)")
+                let err = sqlx::query("INSERT INTO MarioPartyDSEntries VALUES (DEFAULT, $1, $2, $3, $4, $5)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
                     .bind(player_data.coins)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -368,7 +468,8 @@ pub async fn games(
         },
         MarioPartyData::MarioPartyIslandTour(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyIslandTourEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)")
+                let err = sqlx::query("INSERT INTO MarioPartyIslandTourEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.green_spaces)
@@ -380,7 +481,7 @@ pub async fn games(
                     .bind(player_data.free_for_all_spaces)
                     .bind(player_data.bowser_spaces)
                     .bind(player_data.spaces_moved)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -388,12 +489,13 @@ pub async fn games(
         },
         MarioPartyData::MarioPartyStarRush(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyStarRushEntries VALUES (DEFAULT, $1, $2, $3, $4)")
+                let err = sqlx::query("INSERT INTO MarioPartyStarRushEntries VALUES (DEFAULT, $1, $2, $3, $4, $5)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
                     .bind(player_data.coins)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -401,12 +503,13 @@ pub async fn games(
         },
         MarioPartyData::MarioPartyTop100(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyTop100Entries VALUES (DEFAULT, $1, $2, $3, $4)")
+                let err = sqlx::query("INSERT INTO MarioPartyTop100Entries VALUES (DEFAULT, $1, $2, $3, $4, $5)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
                     .bind(player_data.coins)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -414,7 +517,8 @@ pub async fn games(
         },
         MarioPartyData::SuperMarioParty(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO SuperMarioPartyEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)")
+                let err = sqlx::query("INSERT INTO SuperMarioPartyEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -433,7 +537,7 @@ pub async fn games(
                     .bind(player_data.ally_spaces)
                     .bind(player_data.bad_luck_spaces)
                     .bind(player_data.extra_bad_luck_spaces)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -441,7 +545,8 @@ pub async fn games(
         },
         MarioPartyData::MarioPartySuperstars(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartySuperstarsEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)")
+                let err = sqlx::query("INSERT INTO MarioPartySuperstarsEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -461,7 +566,7 @@ pub async fn games(
                     .bind(player_data.vs_spaces)
                     .bind(player_data.koopa_bank_spaces)
                     .bind(player_data.stickers_used)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
@@ -469,7 +574,8 @@ pub async fn games(
         },
         MarioPartyData::MarioPartyJamboree(players_data) => {
             for player_data in players_data {
-                let err = sqlx::query("INSERT INTO MarioPartyJamboreeEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)")
+                let err = sqlx::query("INSERT INTO MarioPartyJamboreeEntries VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)")
+                    .bind(game_id)
                     .bind(player_data.player_name)
                     .bind(player_data.character)
                     .bind(player_data.stars)
@@ -491,13 +597,25 @@ pub async fn games(
                     .bind(player_data.items_used)
                     .bind(player_data.spaces_traveled)
                     .bind(player_data.buddy_spaces_moved)
-                    .execute(&pool)
+                    .execute(&mut *tx)
                     .await;
 
                 err.unwrap();
             }
         }
     }
+    tx.commit().await.unwrap();
+
+    return (
+        StatusCode::OK,
+        Json(
+            MessageResponse {
+                message: String::from("Created game successfully"),
+                success: true
+            }
+        )
+    ).into_response();
+
 }
 
 #[axum::debug_handler]
@@ -574,11 +692,11 @@ pub async fn login(
     }
 
     return (StatusCode::OK, Json(
-    MessageResponse {
-                    message: String::from("Success!"),
-                    success: true
-                }
-            )).into_response();
+        MessageResponse {
+            message: String::from("Success!"),
+            success: true
+        }
+    )).into_response();
 }
 
 #[axum::debug_handler]

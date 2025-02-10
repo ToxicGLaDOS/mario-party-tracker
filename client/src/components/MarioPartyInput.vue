@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { computed } from 'vue'
   import type { PropType } from 'vue'
   interface Field {
     name: string,
@@ -12,29 +11,37 @@
       required: true
     }
   })
-
-  const columns = computed(() => {
-    return props.input_schema.length;
-  })
 </script>
 
 <template>
   <div class="player-stats-container">
-    <label v-for="field in input_schema" :for="field.name">{{ field.name }}</label>
-    <input v-for="field in input_schema" :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
+    <div v-for="field in input_schema" class="item">
+      <label :for="field.name">{{ field.name }}</label>
+      <input :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
+    </div>
   </div>
 </template>
 
 <style scoped>
   .player-stats-container {
-    display: grid;
-    grid-template-columns: repeat(v-bind(columns), auto);
-    width: 90vw;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+    padding-right: 10px;
   }
  
   input {
     display: flex;
     min-width: 0;
+  }
+
+  label {
+    display: flex;
   }
 </style>

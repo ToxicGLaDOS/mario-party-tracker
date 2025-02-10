@@ -11,7 +11,7 @@ pub struct GameData {
     pub player_data: MarioPartyData,
     pub board: String,
     pub turns: i32,
-    //pub date: DateTime<Local>
+    pub date: DateTime<Utc>
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
