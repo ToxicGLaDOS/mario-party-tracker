@@ -7,6 +7,22 @@ CREATE TABLE Games (
 );
 
 CREATE TYPE MarioPartyCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'donkey_kong');
+CREATE TYPE MarioParty2Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'donkey_kong');
+CREATE TYPE MarioParty3Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'donkey_kong', 'princess_daisy', 'waluigi');
+CREATE TYPE MarioParty4Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'donkey_kong', 'princess_daisy', 'waluigi');
+CREATE TYPE MarioParty5Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'boo', 'koopa_kid');
+CREATE TYPE MarioParty6Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'boo', 'koopa_kid', 'toadette');
+CREATE TYPE MarioParty7Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'boo', 'toadette', 'birdo', 'dry_bones');
+CREATE TYPE MarioParty8Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'boo', 'toadette', 'birdo', 'dry_bones', 'blooper', 'hammer_bro');
+CREATE TYPE MarioParty9Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'birdo', 'koopa', 'shy_guy', 'magikoopa');
+CREATE TYPE MarioParty10Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'toadette', 'donkey_kong', 'rosalina', 'bowser', 'spike');
+CREATE TYPE MarioPartyDSCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad');
+CREATE TYPE MarioPartyIslandTourCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'boo', 'bowser_jr');
+CREATE TYPE MarioPartyStarRushCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'toad', 'toadette', 'rosalina', 'donkey_kong', 'diddy_kong');
+CREATE TYPE MarioPartyTop100Characters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'rosalina');
+CREATE TYPE SuperMarioPartyCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'rosalina', 'bowser', 'goomba', 'shy_guy', 'koopa', 'monty_mole', 'bowser_jr', 'boo', 'hammer_bro', 'donkey_kong', 'diddy_kong', 'dry_bones', 'pom_pom');
+CREATE TYPE MarioPartySuperstarsCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'rosalina', 'donkey_kong', 'birdo');
+CREATE TYPE MarioPartyJamboreeCharacters AS ENUM ('mario', 'luigi', 'princess_peach', 'yoshi', 'wario', 'princess_daisy', 'waluigi', 'rosalina', 'bowser', 'goomba', 'shy_guy', 'koopa', 'monty_mole', 'bowser_jr', 'boo', 'toad', 'toadette', 'donkey_kong', 'birdo', 'spike', 'pauline', 'ninji');
 
 CREATE TABLE MarioPartyEntries (
     id SERIAL PRIMARY KEY,
