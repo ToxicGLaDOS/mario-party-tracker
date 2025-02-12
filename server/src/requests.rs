@@ -14,16 +14,289 @@ pub struct GameData {
     pub date: DateTime<Utc>
 }
 
+// #[sqlx(rename_all = "snake_case")] makes it so the enums are stored
+// lower case in the database, which I'm told is conventional
+// https://stackoverflow.com/a/2878408/3697905
+// Experimentally, I saw that postgres enum variants support spaces
+// so we could have `CREATE TYPE MarioPartyCharacters AS ENUM ('Donkey Kong', ...)`
+// but that just seems wrong, so I'm not going to do it haha.
+//
+// sqlx::Type is what lets us .bind() the enum to the sql query directly
+// instead of having to convert it to a string. This relies on a sql enum
+// existing for it though
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[serde(rename_all = "snake_case")]
 #[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyCharacters {
     Mario,
     Luigi,
-    PrincessPeach,
+    Peach,
     Yoshi,
     Wario,
     DonkeyKong
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty2Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    DonkeyKong
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty3Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    DonkeyKong,
+    Daisy,
+    Waluigi
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty4Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    DonkeyKong,
+    Daisy,
+    Waluigi
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty5Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Boo,
+    KoopaKid
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty6Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Boo,
+    KoopaKid,
+    Toadette
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty7Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Boo,
+    Toadette,
+    Birdo,
+    DryBones
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty8Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Boo,
+    Toadette,
+    Birdo,
+    DryBones,
+    Blooper,
+    HammerBro
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty9Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Birdo,
+    Koopa,
+    ShyGuy,
+    Magikoopa
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioParty10Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Toadette,
+    DonkeyKong,
+    Rosalina,
+    Bowser,
+    Spike
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyDSCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyIslandTourCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Boo,
+    BowserJr
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyStarRushCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Toad,
+    Toadette,
+    Rosalina,
+    DonkeyKong,
+    DiddyKong
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyTop100Characters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Rosalina
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum SuperMarioPartyCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Rosalina,
+    Bowser,
+    Goomba,
+    ShyGuy,
+    Koopa,
+    MontyMole,
+    BowserJr,
+    Boo,
+    HammerBro,
+    DonkeyKong,
+    DiddyKong,
+    DryBones,
+    PomPom
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartySuperstarsCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Rosalina,
+    DonkeyKong,
+    Birdo
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
+#[sqlx(rename_all = "snake_case")]
+pub enum MarioPartyJamboreeCharacters {
+    Mario,
+    Luigi,
+    Peach,
+    Yoshi,
+    Wario,
+    Daisy,
+    Waluigi,
+    Rosalina,
+    Bowser,
+    Goomba,
+    ShyGuy,
+    Koopa,
+    MontyMole,
+    BowserJr,
+    Boo,
+    Toad,
+    Toadette,
+    DonkeyKong,
+    Birdo,
+    Spike,
+    Pauline,
+    Ninji
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
@@ -46,7 +319,7 @@ pub struct MarioParty {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty2 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty2Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -64,7 +337,7 @@ pub struct MarioParty2 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty3 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty3Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -83,7 +356,7 @@ pub struct MarioParty3 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty4 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty4Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -101,7 +374,7 @@ pub struct MarioParty4 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty5 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty5Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -117,7 +390,7 @@ pub struct MarioParty5 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty6 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty6Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -135,7 +408,7 @@ pub struct MarioParty6 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty7 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty7Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -155,7 +428,7 @@ pub struct MarioParty7 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty8 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty8Characters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -173,7 +446,7 @@ pub struct MarioParty8 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty9 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty9Characters,
     pub mini_stars: i32,
     pub mini_stars_lost: i32,
     pub minigame_stars: i32,
@@ -201,14 +474,14 @@ pub struct MarioParty9 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioParty10 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioParty10Characters,
     pub mini_stars: i32
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartyDS {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyDSCharacters,
     pub stars: i32,
     pub coins: i32
 }
@@ -216,7 +489,7 @@ pub struct MarioPartyDS {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartyIslandTour {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyIslandTourCharacters,
     pub green_spaces: i32,
     pub item_spaces: i32,
     pub dash_spaces: i32,
@@ -231,7 +504,7 @@ pub struct MarioPartyIslandTour {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartyStarRush {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyStarRushCharacters,
     pub stars: i32,
     pub coins: i32
 }
@@ -239,7 +512,7 @@ pub struct MarioPartyStarRush {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartyTop100 {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyTop100Characters,
     pub stars: i32,
     pub coins: i32
 }
@@ -247,7 +520,7 @@ pub struct MarioPartyTop100 {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct SuperMarioParty {
     pub player_name: String,
-    pub character: String,
+    pub character: SuperMarioPartyCharacters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -270,7 +543,7 @@ pub struct SuperMarioParty {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartySuperstars {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartySuperstarsCharacters,
     pub stars: i32,
     pub coins: i32,
     pub minigame_coins: i32,
@@ -293,7 +566,7 @@ pub struct MarioPartySuperstars {
 #[derive(Deserialize, ListFields, Clone, Debug)]
 pub struct MarioPartyJamboree {
     pub player_name: String,
-    pub character: String,
+    pub character: MarioPartyJamboreeCharacters,
     pub stars: i32,
     pub coins: i32,
     pub blue_spaces: i32,
