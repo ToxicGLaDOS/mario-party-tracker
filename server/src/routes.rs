@@ -619,6 +619,28 @@ pub async fn games(
 }
 
 #[axum::debug_handler]
+pub async fn characters(
+    Extension(pool): Extension<PgPool>,
+    mut auth_session: AuthSession,
+    Form(creds): Form<Credentials>,
+) -> impl IntoResponse {
+    let enums = sqlx::query("SELECT
+                                pg_type.typname AS enum_name,
+                                pg_enum.enumlabel AS enum_value
+                             from pg_type
+                                JOIN pg_enum on pg_type.oid = pg_enum.enumtypid
+                                WHERE pg_type.typname LIKE '%characters'")
+        .fetch_all(&pool)
+        .await
+        .unwrap();
+
+    let characters: HashMap<String, Vec<String>> = HashMap::new();
+    for row in enums {
+        row.enum_data
+    }
+}
+
+#[axum::debug_handler]
 pub async fn signup(
     Extension(pool): Extension<PgPool>,
     mut auth_session: AuthSession,

@@ -4,7 +4,6 @@ use std::fmt;
 use listfields_derive::ListFields;
 use crate::listfields::{ObjectData, EnumData, Variant, ListFields, Field};
 use chrono::{DateTime, Utc, Local};
-use serde_aux::prelude::*;
 
 #[derive(Deserialize, Debug)]
 pub struct GameData {

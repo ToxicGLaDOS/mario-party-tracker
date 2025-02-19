@@ -90,6 +90,7 @@ async fn main() -> Result<(), sqlx::Error> {
         .route("/api/signup", post(routes::signup))
         .route("/api/games", post(routes::games))
         .route("/api/input/schema", get(routes::input_schema))
+        .route("/api/characters", get(routes::characters))
         .layer(auth_layer)
         .layer(
             ServiceBuilder::new()
