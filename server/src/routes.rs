@@ -702,11 +702,16 @@ pub async fn login(
 #[axum::debug_handler]
 pub async fn input_schema() -> impl IntoResponse {
     let mut h: HashMap<String, Vec<Field>> = HashMap::new();
+    let mut types: HashMap<String, Vec<String>> = HashMap::new();
 
     if let ObjectData::EnumData(EnumData { name, variants }) = MarioPartyData::list_fields() {
+        // These are the variants;
+        // MarioParty(Vec<MarioParty>),
+        // MarioParty2(Vec<MarioParty2>),
+        // etc.
         for variant in variants {
             match variant.type_data {
-                ObjectData::Fields(fields) => {
+                Some(ObjectData::Fields(fields)) => {
                     h.insert(variant.name, fields);
                 },
                 _ => {}

@@ -4,6 +4,7 @@ use std::fmt;
 use listfields_derive::ListFields;
 use crate::listfields::{ObjectData, EnumData, Variant, ListFields, Field};
 use chrono::{DateTime, Utc, Local};
+use serde_aux::prelude::*;
 
 #[derive(Deserialize, Debug)]
 pub struct GameData {
@@ -14,66 +15,58 @@ pub struct GameData {
     pub date: DateTime<Utc>
 }
 
-// #[sqlx(rename_all = "snake_case")] makes it so the enums are stored
-// lower case in the database, which I'm told is conventional
-// https://stackoverflow.com/a/2878408/3697905
-// Experimentally, I saw that postgres enum variants support spaces
-// so we could have `CREATE TYPE MarioPartyCharacters AS ENUM ('Donkey Kong', ...)`
-// but that just seems wrong, so I'm not going to do it haha.
-//
 // sqlx::Type is what lets us .bind() the enum to the sql query directly
 // instead of having to convert it to a string. This relies on a sql enum
 // existing for it though
-#[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
+#[derive(Serialize, Deserialize, ListFields, Clone, Debug, sqlx::Type)]
 pub enum MarioPartyCharacters {
     Mario,
     Luigi,
     Peach,
     Yoshi,
     Wario,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty2Characters {
     Mario,
     Luigi,
     Peach,
     Yoshi,
     Wario,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty3Characters {
     Mario,
     Luigi,
     Peach,
     Yoshi,
     Wario,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
     Daisy,
     Waluigi
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty4Characters {
     Mario,
     Luigi,
     Peach,
     Yoshi,
     Wario,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
     Daisy,
     Waluigi
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty5Characters {
     Mario,
     Luigi,
@@ -84,11 +77,11 @@ pub enum MarioParty5Characters {
     Waluigi,
     Toad,
     Boo,
+    #[serde(rename = "Koopa Kid")]
     KoopaKid
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty6Characters {
     Mario,
     Luigi,
@@ -99,12 +92,12 @@ pub enum MarioParty6Characters {
     Waluigi,
     Toad,
     Boo,
+    #[serde(rename = "Koopa Kid")]
     KoopaKid,
     Toadette
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty7Characters {
     Mario,
     Luigi,
@@ -117,11 +110,11 @@ pub enum MarioParty7Characters {
     Boo,
     Toadette,
     Birdo,
+    #[serde(rename = "Dry Bones")]
     DryBones
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty8Characters {
     Mario,
     Luigi,
@@ -134,13 +127,14 @@ pub enum MarioParty8Characters {
     Boo,
     Toadette,
     Birdo,
+    #[serde(rename = "Dry Bones")]
     DryBones,
     Blooper,
+    #[serde(rename = "Hammer Bro")]
     HammerBro
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty9Characters {
     Mario,
     Luigi,
@@ -152,12 +146,12 @@ pub enum MarioParty9Characters {
     Toad,
     Birdo,
     Koopa,
+    #[serde(rename = "Shy Guy")]
     ShyGuy,
     Magikoopa
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioParty10Characters {
     Mario,
     Luigi,
@@ -168,6 +162,7 @@ pub enum MarioParty10Characters {
     Waluigi,
     Toad,
     Toadette,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
     Rosalina,
     Bowser,
@@ -175,7 +170,6 @@ pub enum MarioParty10Characters {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyDSCharacters {
     Mario,
     Luigi,
@@ -188,7 +182,6 @@ pub enum MarioPartyDSCharacters {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyIslandTourCharacters {
     Mario,
     Luigi,
@@ -199,11 +192,11 @@ pub enum MarioPartyIslandTourCharacters {
     Waluigi,
     Toad,
     Boo,
+    #[serde(rename = "Bowser Jr.")]
     BowserJr
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyStarRushCharacters {
     Mario,
     Luigi,
@@ -215,12 +208,13 @@ pub enum MarioPartyStarRushCharacters {
     Toad,
     Toadette,
     Rosalina,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
+    #[serde(rename = "Diddy Kong")]
     DiddyKong
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyTop100Characters {
     Mario,
     Luigi,
@@ -233,7 +227,6 @@ pub enum MarioPartyTop100Characters {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum SuperMarioPartyCharacters {
     Mario,
     Luigi,
@@ -245,20 +238,27 @@ pub enum SuperMarioPartyCharacters {
     Rosalina,
     Bowser,
     Goomba,
+    #[serde(rename = "Shy Guy")]
     ShyGuy,
     Koopa,
+    #[serde(rename = "Monty Mole")]
     MontyMole,
+    #[serde(rename = "Bowser Jr.")]
     BowserJr,
     Boo,
+    #[serde(rename = "Hammer Bro")]
     HammerBro,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
+    #[serde(rename = "Diddy Kong")]
     DiddyKong,
+    #[serde(rename = "Dry Bones")]
     DryBones,
+    #[serde(rename = "Pom Pom")]
     PomPom
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartySuperstarsCharacters {
     Mario,
     Luigi,
@@ -268,12 +268,12 @@ pub enum MarioPartySuperstarsCharacters {
     Daisy,
     Waluigi,
     Rosalina,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
     Birdo
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, sqlx::Type)]
-#[sqlx(rename_all = "snake_case")]
 pub enum MarioPartyJamboreeCharacters {
     Mario,
     Luigi,
@@ -285,13 +285,17 @@ pub enum MarioPartyJamboreeCharacters {
     Rosalina,
     Bowser,
     Goomba,
+    #[serde(rename = "Shy Guy")]
     ShyGuy,
     Koopa,
+    #[serde(rename = "Monty Mole")]
     MontyMole,
+    #[serde(rename = "Bowser Jr.")]
     BowserJr,
     Boo,
     Toad,
     Toadette,
+    #[serde(rename = "Donkey Kong")]
     DonkeyKong,
     Birdo,
     Spike,

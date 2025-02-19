@@ -25,6 +25,6 @@ pub struct EnumData {
 #[derive(Debug)]
 pub struct Variant {
     pub name: String,
-    pub ty: String,
-    pub type_data: ObjectData
+    pub ty: Option<String>,
+    pub type_data: Option<ObjectData>
 }

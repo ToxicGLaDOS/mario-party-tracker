@@ -1,6 +1,6 @@
 use proc_macro::{self, TokenStream};
 use quote::quote;
-use syn::{braced, parenthesized, parse::{Parse, ParseStream}, parse_macro_input, Attribute, Error, Ident, LitStr, Token, Type, Visibility, MetaList};
+use syn::{braced, parenthesized, parse::{Parse, ParseStream}, parse_macro_input, token::Paren, Attribute, Error, Ident, LitStr, MetaList, Token, Type, Visibility};
 
 enum ObjectParsed {
     EnumParsed(EnumParsed),
@@ -22,7 +22,7 @@ struct StructParsed {
 #[derive(Debug)]
 struct Var {
     name: String,
-    ty: Ty
+    ty: Option<Ty>
 }
 
 #[derive(Debug)]
@@ -100,19 +100,26 @@ impl Parse for Var {
         }
 
         let ident: Ident = input.parse()?;
-
-        let content;
-        parenthesized!(content in input);
-
-        let ty: Ty = content.parse()?;
-
         if name.is_none() {
             name = Some(ident.to_string());
         }
-        Ok(Var{
-            name: name.unwrap(),
-            ty
-        })
+        let lookahead = input.lookahead1();
+        if lookahead.peek(Paren) {
+            let content;
+            parenthesized!(content in input);
+
+            let ty: Ty = content.parse()?;
+
+            Ok(Var{
+                name: name.unwrap(),
+                ty: Some(ty)
+            })
+        } else {
+            Ok(Var{
+                name: name.unwrap(),
+                ty: None
+            })
+        }
     }
 }
 
@@ -205,18 +212,30 @@ pub fn list_fields_macro(input: TokenStream) -> TokenStream {
 
             for variant in variants {
                 let v_name = variant.name;
-                let v_ty_name = variant.ty.name;
-                let v_ty_ident = variant.ty.ident;
+                if let Some(ty) = variant.ty {
+                    let v_ty_name = ty.name;
+                    let v_ty_ident = ty.ident;
 
-                variant_tokens.push(
-                    quote! {
-                        Variant {
-                            name: #v_name.to_string(),
-                            ty: #v_ty_name.to_string(),
-                            type_data: #v_ty_ident::list_fields()
+                    variant_tokens.push(
+                        quote! {
+                            Variant {
+                                name: #v_name.to_string(),
+                                ty: Some(#v_ty_name.to_string()),
+                                type_data: Some(#v_ty_ident::list_fields())
+                            }
                         }
-                    }
-                );
+                    );
+                } else {
+                    variant_tokens.push(
+                        quote! {
+                            Variant {
+                                name: #v_name.to_string(),
+                                ty: None,
+                                type_data: None
+                            }
+                        }
+                    );
+                }
             }
 
             let output = quote! {
