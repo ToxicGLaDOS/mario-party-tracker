@@ -268,6 +268,9 @@
       })
   }
 
+  var characters_json = await fetch("/api/characters")
+    .then( response => response.json());
+
   var input_schemas = await fetch("/api/input/schema")
     .then( response => response.json());
 
@@ -276,7 +279,16 @@
       return input_schemas[selected_game.value];
     }
     else {
-      return []
+      return [];
+    }
+  })
+
+  const characters = computed(() => {
+    if (selected_game.value !== undefined && selected_game.value in characters_json) {
+      return characters_json[selected_game.value];
+    }
+    else {
+      return [];
     }
   })
 
@@ -339,9 +351,8 @@
           </div>
         </div>
 
-
         <div class="individual-inputs-container">
-          <MarioPartyInput v-for="_ in 4" :input_schema="input_schema" />
+          <MarioPartyInput v-for="_ in 4" :input_schema="input_schema" :characters="characters" />
         </div>
 
         <input type="submit" class="submit-button" value="Submit" />

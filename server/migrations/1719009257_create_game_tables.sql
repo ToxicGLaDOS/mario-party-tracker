@@ -6,29 +6,29 @@ CREATE TABLE Games (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
-CREATE TYPE MarioPartyCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'DonkeyKong');
-CREATE TYPE MarioParty2Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'DonkeyKong');
-CREATE TYPE MarioParty3Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'DonkeyKong', 'Daisy', 'Waluigi');
-CREATE TYPE MarioParty4Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'DonkeyKong', 'Daisy', 'Waluigi');
-CREATE TYPE MarioParty5Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'KoopaKid');
-CREATE TYPE MarioParty6Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'KoopaKid', 'Toadette');
-CREATE TYPE MarioParty7Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Toadette', 'Birdo', 'DryBones');
-CREATE TYPE MarioParty8Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Toadette', 'Birdo', 'DryBones', 'Blooper', 'HammerBro');
-CREATE TYPE MarioParty9Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Birdo', 'Koopa', 'ShyGuy', 'Magikoopa');
-CREATE TYPE MarioParty10Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Toadette', 'DonkeyKong', 'Rosalina', 'Bowser', 'Spike');
-CREATE TYPE MarioPartyDSCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad');
-CREATE TYPE MarioPartyIslandTourCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'BowserJr');
-CREATE TYPE MarioPartyStarRushCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Toadette', 'Rosalina', 'DonkeyKong', 'DiddyKong');
-CREATE TYPE MarioPartyTop100Characters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina');
-CREATE TYPE SuperMarioPartyCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'Bowser', 'Goomba', 'ShyGuy', 'Koopa', 'MontyMole', 'BowserJr', 'Boo', 'HammerBro', 'DonkeyKong', 'DiddyKong', 'DryBones', 'PomPom');
-CREATE TYPE MarioPartySuperstarsCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'DonkeyKong', 'Birdo');
-CREATE TYPE MarioPartyJamboreeCharacters AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'Bowser', 'Goomba', 'ShyGuy', 'Koopa', 'MontyMole', 'BowserJr', 'Boo', 'Toad', 'Toadette', 'DonkeyKong', 'Birdo', 'Spike', 'Pauline', 'Ninji');
+CREATE TYPE "MarioPartyCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Donkey Kong');
+CREATE TYPE "MarioParty2Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Donkey Kong');
+CREATE TYPE "MarioParty3Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Donkey Kong', 'Daisy', 'Waluigi');
+CREATE TYPE "MarioParty4Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Donkey Kong', 'Daisy', 'Waluigi');
+CREATE TYPE "MarioParty5Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Koopa Kid');
+CREATE TYPE "MarioParty6Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Koopa Kid', 'Toadette');
+CREATE TYPE "MarioParty7Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Toadette', 'Birdo', 'Dry Bones');
+CREATE TYPE "MarioParty8Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Toadette', 'Birdo', 'Dry Bones', 'Blooper', 'Hammer Bro');
+CREATE TYPE "MarioParty9Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Birdo', 'Koopa', 'Shy Guy', 'Magikoopa');
+CREATE TYPE "MarioParty10Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Toadette', 'Donkey Kong', 'Rosalina', 'Bowser', 'Spike');
+CREATE TYPE "MarioPartyDSCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad');
+CREATE TYPE "MarioParty:IslandTourCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Boo', 'Bowser Jr.');
+CREATE TYPE "MarioParty:StarRushCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Toad', 'Toadette', 'Rosalina', 'Donkey Kong', 'Diddy Kong');
+CREATE TYPE "MarioParty:TheTop100Characters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina');
+CREATE TYPE "SuperMarioPartyCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'Bowser', 'Goomba', 'Shy Guy', 'Koopa', 'Monty Mole', 'Bowser Jr.', 'Boo', 'Hammer Bro', 'Donkey Kong', 'Diddy Kong', 'Dry Bones', 'Pom Pom');
+CREATE TYPE "MarioPartySuperstarsCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'Donkey Kong', 'Birdo');
+CREATE TYPE "MarioPartyJamboreeCharacters" AS ENUM ('Mario', 'Luigi', 'Peach', 'Yoshi', 'Wario', 'Daisy', 'Waluigi', 'Rosalina', 'Bowser', 'Goomba', 'Shy Guy', 'Koopa', 'Monty Mole', 'Bowser Jr.', 'Boo', 'Toad', 'Toadette', 'Donkey Kong', 'Birdo', 'Spike', 'Pauline', 'Ninji');
 
 CREATE TABLE MarioPartyEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character MarioPartyCharacters NOT NULL,
+    character "MarioPartyCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE MarioParty2Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty2Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE MarioParty3Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty3Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -88,7 +88,7 @@ CREATE TABLE MarioParty4Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty4Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE MarioParty5Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty5Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE MarioParty6Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty6Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE MarioParty7Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty7Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE MarioParty8Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty8Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -188,7 +188,7 @@ CREATE TABLE MarioParty9Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty9Characters" NOT NULL,
     mini_stars INTEGER NOT NULL,
     mini_stars_lost INTEGER NOT NULL,
     minigame_stars INTEGER NOT NULL,
@@ -219,7 +219,7 @@ CREATE TABLE MarioParty10Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty10Characters" NOT NULL,
     mini_stars INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES Games(id)
 );
@@ -228,7 +228,7 @@ CREATE TABLE MarioPartyDSEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioPartyDSCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES Games(id)
@@ -238,7 +238,7 @@ CREATE TABLE MarioPartyIslandTourEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty:IslandTourCharacters" NOT NULL,
     green_spaces INTEGER NOT NULL,
     item_spaces INTEGER NOT NULL,
     dash_spaces INTEGER NOT NULL,
@@ -255,7 +255,7 @@ CREATE TABLE MarioPartyStarRushEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty:StarRushCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES Games(id)
@@ -265,7 +265,7 @@ CREATE TABLE MarioPartyTop100Entries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioParty:TheTop100Characters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES Games(id)
@@ -275,7 +275,7 @@ CREATE TABLE SuperMarioPartyEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "SuperMarioPartyCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -300,7 +300,7 @@ CREATE TABLE MarioPartySuperstarsEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioPartySuperstarsCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     minigame_coins INTEGER NOT NULL,
@@ -325,7 +325,7 @@ CREATE TABLE MarioPartyJamboreeEntries (
     id SERIAL PRIMARY KEY,
     game_id INTEGER,
     player_name TEXT NOT NULL,
-    character TEXT NOT NULL,
+    character "MarioPartyJamboreeCharacters" NOT NULL,
     stars INTEGER NOT NULL,
     coins INTEGER NOT NULL,
     blue_spaces INTEGER NOT NULL,

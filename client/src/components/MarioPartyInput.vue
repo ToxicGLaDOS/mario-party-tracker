@@ -9,6 +9,10 @@
     input_schema: {
       type: Object as PropType<Array<Field>>,
       required: true
+    },
+    characters: {
+      type: Object as PropType<Array<Field>>,
+      required: true
     }
   })
 </script>
@@ -17,7 +21,16 @@
   <div class="player-stats-container">
     <div v-for="field in input_schema" class="item">
       <label :for="field.name">{{ field.name }}</label>
-      <input :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
+      <input v-if="field.name != 'character'" :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
+      <!-- TODO: I hate this special casing, but the backend stuff to get enums in the input schema
+        is hard and probably requires a rewrite of listfields-derive or something.
+        But doing it would let me remove the /api/characters endpoint and just use input schema,
+        so it's probably worth it. eventually...
+      -->
+      <select v-if="field.name == 'character'" :id="field.name" :name="field.name">
+        <option disabled selected value> -- Character -- </option>
+        <option v-for="character in characters" :value="character">{{ character }}</option>
+      </select>
     </div>
   </div>
 </template>

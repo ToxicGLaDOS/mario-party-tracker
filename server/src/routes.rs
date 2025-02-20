@@ -618,26 +618,59 @@ pub async fn games(
 
 }
 
+fn fix_enum_name(s: String) -> String {
+    let mut new_string = "".to_string();
+    let mut prev_char = 'a';
+    for (i, char) in s.chars().enumerate() {
+        if i != 0 {
+            if char.is_ascii_uppercase() && !prev_char.is_ascii_uppercase() {
+                new_string.push(' ');
+            }
+            else if char.is_digit(10) && !prev_char.is_digit(10) {
+                new_string.push(' ');
+            }
+        }
+
+        new_string.push(char);
+        prev_char = char;
+    }
+
+    new_string
+}
+
 #[axum::debug_handler]
 pub async fn characters(
-    Extension(pool): Extension<PgPool>,
-    mut auth_session: AuthSession,
-    Form(creds): Form<Credentials>,
+    Extension(pool): Extension<PgPool>
 ) -> impl IntoResponse {
-    let enums = sqlx::query("SELECT
-                                pg_type.typname AS enum_name,
-                                pg_enum.enumlabel AS enum_value
-                             from pg_type
-                                JOIN pg_enum on pg_type.oid = pg_enum.enumtypid
-                                WHERE pg_type.typname LIKE '%characters'")
+    let enums: Vec<(String, String)> = sqlx::query_as("
+            SELECT
+               pg_type.typname AS enum_name,
+               pg_enum.enumlabel AS enum_value
+            from pg_type
+               JOIN pg_enum on pg_type.oid = pg_enum.enumtypid
+               WHERE pg_type.typname LIKE '%Characters'")
         .fetch_all(&pool)
         .await
         .unwrap();
 
-    let characters: HashMap<String, Vec<String>> = HashMap::new();
+    let mut characters: HashMap<String, Vec::<String>> = HashMap::new();
     for row in enums {
-        row.enum_data
+        let enum_name = row.0;
+        let enum_value = row.1;
+
+        let enum_name = enum_name.strip_suffix("Characters").unwrap().to_string();
+
+        let enum_name = fix_enum_name(enum_name);
+
+        if !characters.contains_key(&enum_name) {
+            characters.insert(enum_name.clone(), Vec::<String>::new());
+        }
+        if let Some(this_games_characters) = characters.get_mut(&enum_name) {
+            this_games_characters.push(enum_value);
+        }
     }
+
+    return Json(characters)
 }
 
 #[axum::debug_handler]
