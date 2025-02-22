@@ -596,7 +596,7 @@ pub async fn games(
                     .bind(player_data.items_bought)
                     .bind(player_data.items_used)
                     .bind(player_data.spaces_traveled)
-                    .bind(player_data.buddy_spaces_moved)
+                    .bind(player_data.reactions_used)
                     .execute(&mut *tx)
                     .await;
 

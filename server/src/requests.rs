@@ -623,16 +623,16 @@ pub struct MarioPartyJamboree {
     pub item_spaces: i32,
     pub bowser_spaces: i32,
     pub event_spaces: i32,
-    pub chance_time_spaces: i32, //TODO: Is this what it's called
+    pub chance_time_spaces: i32,
     pub vs_spaces: i32,
     pub coins_received: i32,
     pub minigames_won: i32,
     pub hidden_blocks_found: i32,
     pub showdown_minigames_won: i32,
-    pub items_bought: i32, //TODO: Is this what it is tracking?
-    pub items_used: i32, //TODO: Is this what it is tracking?
+    pub items_bought: i32,
+    pub items_used: i32,
     pub spaces_traveled: i32,
-    pub buddy_spaces_moved: i32, //TODO: This isn't what it is tracking, figure it out
+    pub reactions_used: i32,
 }
 
 #[derive(Deserialize, ListFields, Clone, Debug)]

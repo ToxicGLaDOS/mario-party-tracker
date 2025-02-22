@@ -344,6 +344,6 @@ CREATE TABLE MarioPartyJamboreeEntries (
     items_bought INTEGER NOT NULL,
     items_used INTEGER NOT NULL,
     spaces_traveled INTEGER NOT NULL,
-    buddy_spaces_moved INTEGER NOT NULL,
+    reactions_used INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES Games(id)
 );
