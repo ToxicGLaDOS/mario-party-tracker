@@ -15,12 +15,20 @@
       required: true
     }
   })
+
+  // Spacecase is a made up name
+  // Converts foo_bar -> Foo bar
+  function snakecaseToSpacecase(str: String) {
+    var s = str.replaceAll("_", " ");
+    s = String(s[0]).toUpperCase() + String(s).slice(1);
+    return s;
+  }
 </script>
 
 <template>
   <div class="player-stats-container">
     <div v-for="field in input_schema" class="item">
-      <label :for="field.name">{{ field.name }}</label>
+      <label :for="field.name">{{ snakecaseToSpacecase(field.name) }}</label>
       <input v-if="field.name != 'character'" :id="field.name" :name="field.name" :type="field.ty== 'i32' ? 'number': 'text'" />
       <!-- TODO: I hate this special casing, but the backend stuff to get enums in the input schema
         is hard and probably requires a rewrite of listfields-derive or something.
