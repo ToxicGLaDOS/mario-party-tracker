@@ -1,10 +1,8 @@
-use regex::Regex;
 use async_trait::async_trait;
 use tokio::task;
 use std::collections::HashMap;
 use sqlx::postgres::PgPool;
-use sqlx::{query_scalar, Row};
-use sqlx::{FromRow, Postgres, Transaction};
+use sqlx::FromRow;
 use serde::{Serialize, Deserialize};
 use password_auth::{generate_hash, verify_password};
 use axum::{
@@ -18,7 +16,7 @@ use axum_login::{
     AuthUser,
     AuthnBackend,
     UserId};
-use crate::requests::{GameData, MarioPartyCharacters, MarioPartyData};
+use crate::requests::{GameData, MarioPartyData};
 use crate::responses::MessageResponse;
 use crate::listfields::{ListFields, Field, EnumData, ObjectData};
 
@@ -121,11 +119,11 @@ impl AuthnBackend for Backend {
 #[axum::debug_handler]
 pub async fn games(
     Extension(pool): Extension<PgPool>,
-    mut auth_session: AuthSession,
+    auth_session: AuthSession,
     Json(mp_data): Json<GameData>
 ) -> impl IntoResponse {
     println!("data: {mp_data:?}");
-    let mut tx_result = pool.begin().await;
+    let tx_result = pool.begin().await;
     let game_id: i32;
     let user_id: i32;
 
@@ -167,7 +165,7 @@ pub async fn games(
         .await;
 
 
-    let user_id = match user_id_result {
+    user_id = match user_id_result {
         Ok(user_id) => {
             user_id
         }
@@ -779,9 +777,8 @@ pub async fn login(
 #[axum::debug_handler]
 pub async fn input_schema() -> impl IntoResponse {
     let mut h: HashMap<String, Vec<Field>> = HashMap::new();
-    let mut types: HashMap<String, Vec<String>> = HashMap::new();
 
-    if let ObjectData::EnumData(EnumData { name, variants }) = MarioPartyData::list_fields() {
+    if let ObjectData::EnumData(EnumData { name: _, variants }) = MarioPartyData::list_fields() {
         // These are the variants;
         // MarioParty(Vec<MarioParty>),
         // MarioParty2(Vec<MarioParty2>),

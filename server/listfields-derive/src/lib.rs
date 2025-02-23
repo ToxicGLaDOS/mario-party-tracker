@@ -1,6 +1,6 @@
 use proc_macro::{self, TokenStream};
 use quote::quote;
-use syn::{braced, parenthesized, parse::{Parse, ParseStream}, parse_macro_input, token::Paren, Attribute, Error, Ident, LitStr, MetaList, Token, Type, Visibility};
+use syn::{braced, parenthesized, parse::{Parse, ParseStream}, parse_macro_input, token::Paren, Attribute, Error, Ident, LitStr, Token, Type, Visibility};
 
 enum ObjectParsed {
     EnumParsed(EnumParsed),
