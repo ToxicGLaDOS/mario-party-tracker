@@ -701,11 +701,33 @@ pub async fn signup(
         None => {
             println!("Creating user");
             sqlx::query("INSERT INTO users (username, password_hash) VALUES ($1, $2)")
-                .bind(creds.username)
-                .bind(generate_hash(creds.password))
+                .bind(creds.username.clone())
+                .bind(generate_hash(creds.password.clone()))
                 .fetch_optional(&pool)
                 .await
                 .unwrap();
+
+            let user = match auth_session.authenticate(creds.clone()).await {
+                Ok(Some(user)) => user,
+                Ok(None) => {
+                    println!("Failed to auth after user creation??");
+                    return (StatusCode::INTERNAL_SERVER_ERROR, Json(
+                        MessageResponse {
+                            message: String::from("Unknown error, try logging in at /login"),
+                            success: false
+                        }
+                    )).into_response();
+                }
+                Err(error) => {
+                    println!("error: {}", error);
+                    return StatusCode::INTERNAL_SERVER_ERROR.into_response()
+                }
+            };
+
+            if auth_session.login(&user).await.is_err() {
+                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            }
+
             return (
                 StatusCode::OK,
                 Json(

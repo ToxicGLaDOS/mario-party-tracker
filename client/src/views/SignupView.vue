@@ -29,8 +29,7 @@
     })
 
     if (response.ok) {
-      //window.location.href = "/login";
-      span.innerHTML = "User created successfully";
+      window.location.href = "/input";
     }
     else {
       let json = await response.json();
